@@ -1,0 +1,22 @@
+/**
+ * CSS rules for the resume artefact plugin
+ *
+ * @author     Catalyst IT Ltd
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL version 3 or later
+ * @copyright  For copyright information on Mahara, please see the README file distributed with this software.
+ */
+.checkliststatus a {
+    margin-left: 5px;
+}
+#container #checklistwrap table td.errmsg {
+   padding-left: 20px;
+}
+/* checklist items */
+.checklistitemdescription p {
+    margin: 0 0 5px;
+}
+
+.surligne {
+	background-color: Yellow;
+	color: Navy;
+}
