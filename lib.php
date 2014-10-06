@@ -845,37 +845,26 @@ class ArtefactTypeChecklist extends ArtefactType {
                 	'value' => $item->id,
            		);
 
-
-/*
-				$elements['code'.$i] = array(
-                	'type' => 'hidden',
-                	'value' => $item->code,
-           		);
-				$elements['title'.$i] = array(
-                	'type' => 'hidden',
-                	'value' => trim($item->title),
-           		);
-				$elements['description'.$i] = array(
-                	'type' => 'hidden',
-                	'value' => trim($item->description),
-           		);
-				$elements['scale'.$i] = array(
-                	'type' => 'hidden',
-                	'value' => $item->scale,
-           		);
-				$elements['valueindex'.$i] = array(
-                	'type' => 'hidden',
-                	'value' => $item->valueindex,
-           		);
-*/
                 $i++;
 			}
 		}
 
 		$elements['nbitems'] = array(
-                	'type' => 'hidden',
-                	'value' => $i,
-           		);
+           	'type' => 'hidden',
+           	'value' => $i,
+        );
+
+		$elements['resetitems'] = array(
+                'type'  => 'radio',
+	            'options' => array(
+    	           	0 => get_string('no'),
+        	       	1 => get_string('yes'),
+            	),
+            	'defaultvalue' => 1,
+	            'separator' => ' &nbsp; ',
+    	        'title' => get_string('resetlist', 'artefact.checklist'),
+        	    'description' => get_string('resetlistdesc','artefact.checklist'),
+		);
 
         $elements['optionnal'] = array(
 	            'type' => 'fieldset',
@@ -886,10 +875,9 @@ class ArtefactTypeChecklist extends ArtefactType {
 	            'legend' => get_string('selectinglist','artefact.checklist'),
                 'elements' => $elementitems,
   	    );
-
         $elements['submit'] = array(
             'type' => 'submitcancel',
-            'value' => array(get_string('saveexportlist','artefact.checklist'), get_string('cancel')),
+            'value' => array(get_string('saveexportlist','artefact.checklist'), get_string('exportdonecancel','artefact.checklist')),
             'goto' => get_config('wwwroot') . 'artefact/checklist/index.php',
         );
 
@@ -898,13 +886,16 @@ class ArtefactTypeChecklist extends ArtefactType {
 		// exit;
 
         $form = array(
-            'name' => empty($checklist) ? 'addchecklist' : 'exportchecklist',
+            'name' => 'export',
+		    'method' => 'post',
             'plugintype' => 'artefact',
-            'pluginname' => 'item',
+            'pluginname' => 'checklist',
+            'action' => '',
             'validatecallback' => array(generate_artefact_class_name('checklist'),'validate'),
             'successcallback' => array(generate_artefact_class_name('checklist'),'submit_export'),
             'elements' => $elements,
         );
+
         //print_object($form);
 		//exit;
         return pieform($form);
@@ -920,23 +911,10 @@ class ArtefactTypeChecklist extends ArtefactType {
                 'type' => 'hidden',
                 'value' => $checklist->id,
             ),
-/*
-            'title' => array(
-                'type' => 'hidden',
-                'value' => $checklist->title,
-            ),
-            'description' => array(
-                'type'  => 'hidden',
-                'value' =>$checklist->description,
-            ),
-            'motivation' => array(
-                'type'  => 'hidden',
-                'value' => $checklist->motivation,
-            ),
-*/
+
             'public' => array(
                 'type'  => 'hidden',
-            	'value' => 0,
+            	'value' => 0,             // by default exported lists are not public at loading
             ),
             'title' => array(
                 'type' => 'text',
@@ -963,19 +941,6 @@ class ArtefactTypeChecklist extends ArtefactType {
                 'defaultvalue' => $checklist->motivation,
                 'title' => get_string('motivation', 'artefact.checklist'),
             ),
-/*
-            'public' => array(
-                'type'  => 'radio',
-            	'options' => array(
-                	0 => get_string('no'),
-                	1 => get_string('yes'),
-            	),
-            	'defaultvalue' => 0,
-            	'separator' => ' &nbsp; ',
-                'title' => get_string('publiclist', 'artefact.checklist'),
-                'description' => get_string('publiclistdesc','artefact.checklist'),
-            ),
-*/
         );
 
         if (!empty($checklist)) {
@@ -1006,19 +971,15 @@ class ArtefactTypeChecklist extends ArtefactType {
     	global $USER, $SESSION;
 
 	    if (empty($values['id'])){
-    		redirect('/artefact/checklist/index.php');
+    		redirect(get_config('wwwroot') . 'artefact/checklist/index.php');
 		}
-		// Debug
-		//echo "<br />DEBUG :: lib.php :: submit_export :: 962<br />\n";
-		//print_object($values);
-
 
         $new = true;
-		// $exportclass = new stdClass();
+
         $exportid = $values['id'];
-        $exporttitle = strip_tags($values['title']);
-        $exportdescription = strip_tags($values['description']);
-        $exportmotivation = strip_tags($values['motivation']);
+        $exporttitle = $values['title'];
+        $exportdescription = $values['description'];
+        $exportmotivation = $values['motivation'];
         $exportpublic = $values['public'];
         if (get_config('licensemetadata')) {
     		$license = $values['license'];
@@ -1035,6 +996,13 @@ class ArtefactTypeChecklist extends ArtefactType {
             $exportlicensorurl = $values['licensorurl'];
         }
 
+		if (!empty($values['resetitems'])){
+            $resetitems=1;
+		}
+		else{
+            $resetitems=0;
+		}
+
  		// checked items
 		$exportitemsids='';
 		if (!empty($values['nbitems'])){
@@ -1047,46 +1015,12 @@ class ArtefactTypeChecklist extends ArtefactType {
 				}
 			}
 		}
-		//echo $exportitemsids;
-
-        //echo('/artefact/checklist/exportxml.php?id='.$exportid.'&title='.$exporttitle.'&description='.$exportdescription.'&motivation='.$exportmotivation.'&public='.$exportpublic.'&itemsids='.$exportitemsids.'&license='.$exportlicense.'&licensor='.$exportlicensor.'&licensorurl='.$exportlicensorurl);
 		//exit;
         $SESSION->add_ok_msg(get_string('checklistsavedsuccessfully', 'artefact.checklist'));
-        redirect('/artefact/checklist/exportxml.php?id='.$exportid.'&title='.$exporttitle.'&description='.$exportdescription.'&motivation='.$exportmotivation.'&public='.$exportpublic.'&itemsids='.$exportitemsids.'&license='.$exportlicense.'&licensor='.$exportlicensor.'&licensorurl='.$exportlicensorurl);
+        redirect(get_config('wwwroot') . 'artefact/checklist/exportxml.php?id='.$exportid.'&title='.urlencode($exporttitle).'&description='.urlencode($exportdescription).'&motivation='.urlencode($exportmotivation).'&public='.$exportpublic.'&resetitems='.$resetitems.'&itemsids='.$exportitemsids.'&license='.urlencode($exportlicense).'&licensor='.urlencode($exportlicensor).'&licensorurl='.urlencode($exportlicensorurl));
     }
 
-    /**
-     * Builds the public checklists list table
-     *
-     * @param checklists (reference)
-     */
-	 /*********
-    public static function build_exportlists_list_html(&$checklists) {
-        $smarty = smarty_core();
-        $smarty->assign_by_ref('checklists', $checklists);
-        $checklists['tablerows'] = $smarty->fetch('artefact:checklist:exportlist.tpl');
-        $pagination = build_pagination(array(
-            'id' => 'checklistlist_pagination',
-            'class' => 'center',
-            'url' => get_config('wwwroot') . 'artefact/checklist/index.php',
-            //'jsonscript' => 'artefact/checklist/checklist.json.php',
-            'datatable' => 'checklistlist',
-            'count' => $checklists['count'],
-            'limit' => $checklists['limit'],
-            'offset' => $checklists['offset'],
-            'firsttext' => '',
-            'previoustext' => '',
-            'nexttext' => '',
-            'lasttext' => '',
-            'numbersincludefirstlast' => false,
-            'resultcounttextsingular' => get_string('checklist', 'artefact.checklist'),
-            'resultcounttextplural' => get_string('checklists', 'artefact.checklist'),
-        ));
-        $checklists['pagination'] = $pagination['html'];
-        $checklists['pagination_js'] = $pagination['javascript'];
-    }
-	*******/
-       /**
+     /**
      * Builds the public checklists list table
      *
      * @param checklists (reference)

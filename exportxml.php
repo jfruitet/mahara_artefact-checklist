@@ -25,16 +25,17 @@ if (!PluginArtefactChecklist::is_active()) {
 }
 
 $id = param_integer('id', null);
-$title = param_variable('title', null);
-$description = param_variable('description', null);
-$motivation = param_variable('motivation', null);
+$title = urldecode(param_variable('title', null));
+$description = urldecode(param_variable('description', null));
+$motivation = urldecode(param_variable('motivation', null));
 $public = param_integer('public', null);
 $itemsids = param_variable('itemsids', null);
+$resetitems = param_integer('resetitems', 1);
 
 if (get_config('licensemetadata')) {
-    $license = param_variable('license', null);
-    $licensor = param_variable('licensor', null);
-    $licensorurl = param_variable('licensorurl', null);
+    $license = urldecode(param_variable('license', null));
+    $licensor = urldecode(param_variable('licensor', null));
+    $licensorurl = urldecode(param_variable('licensorurl', null));
 }
 
 if (empty($id)){
@@ -94,7 +95,7 @@ if (!empty($artefactitems)){
         	$item->description = strip_tags($aitem->description);
         	$item->code = $aitem->code;
         	$item->scale = $aitem->scale;
-        	$item->valueindex = $aitem->valueindex;
+        	$item->valueindex = ($resetitems) ? 0 : $aitem->valueindex;
 /*
             if (get_config('licensemetadata')) {
             	$item->license = $aitem->license;

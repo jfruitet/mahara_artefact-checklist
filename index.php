@@ -43,7 +43,7 @@ addLoadEvent(function () {
 });
 EOF;
 
-$smarty = smarty(array('paginator'));
+$smarty = smarty(array('paginator','jquery'));
 $smarty->assign_by_ref('checklists', $checklists);
 if ($limit<$checklists['count']){
 	$smarty->assign('urlalllists', '<a href="' . get_config('wwwroot') . 'artefact/checklist/index.php?public=0&amp;offset=0&amp;limit='.$checklists['count'].'&amp;order='.$order.'">'.get_string('alllists','artefact.checklist',$checklists['count']).'</a>');
