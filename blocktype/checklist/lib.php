@@ -68,8 +68,8 @@ class PluginBlocktypeChecklist extends PluginBlocktype {
 
             	$items = ArtefactTypeItem::get_items($configdata['artefactid']);
 
-            	//$template = 'artefact:checklist:itemrows.tpl';
-                $template = '';
+            	// $template = 'artefact:checklist:itemrows.tpl';
+                // $template = '';
             	$blockid = $instance->get('id');
             	if ($exporter) {
                 	$pagination = false;
@@ -84,7 +84,7 @@ class PluginBlocktypeChecklist extends PluginBlocktype {
                     	'jsonscript' => 'artefact/checklist/viewitems.json.php',
 	                );
     	        }
-        	    ArtefactTypeItem::render_items($items, $template, $configdata, $pagination);
+        	    ArtefactTypeItem::render_items($items, null, $configdata, $pagination);
 
             	if ($exporter && $items['count'] > $items['limit']) {
                 	$artefacturl = get_config('wwwroot') . 'view/artefact.php?artefact=' . $configdata['artefactid']

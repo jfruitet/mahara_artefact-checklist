@@ -32,7 +32,16 @@
 		{foreach from=$items.data item=itemr}
 			<tr class="{cycle values='r0,r1'}">
 				<td>{$itemr->code|safe}</td>
-				<td>{$itemr->title|safe}</td>
+				{if $itemr->optionitem == 0}
+						<td class="normal">{$itemr->title|safe}</td>
+				{else}
+						{if $itemr->optionitem == 1}
+							<td class="optionnal">{$itemr->title|safe}</td>				
+						{else}
+							<td class="header">{$itemr->title|safe}</td>
+						{/if}
+				{/if}
+				
 				<td>{$itemr->scale|clean_html|safe}</td>
 <!--				<td>{$itemr->valueindex|safe}</td>  -->
 <!--				<td>{$itemr->optionitem|safe}</td>  -->
@@ -44,10 +53,10 @@
                 <a href="{$WWWROOT}artefact/checklist/delete/item.php?id={$itemr->item}" title="{str tag=delete}">
                     <img src="{theme_url filename='images/btn_deleteremove.png'}" alt="{str(tag=deletespecific arg1=$itemr->title)|escape:html|safe}">
                 </a>
-                <a href="{$WWWROOT}artefact/checklist/checklist.php?id={$itemr->parent}&amp;itemid={$itemr->item}&amp;direction=1&amp;order={$strorder}" title="{str tag=moveitemdown}">
+                <a href="{$WWWROOT}artefact/checklist/checklist.php?id={$itemr->parent}&amp;itemid={$itemr->item}&amp;direction=1&amp;order={$strorder}&amp;offset=0&amp;limit=100" title="{str tag=moveitemdown}">
                     <img src="{theme_url filename='images/btn_movedown.png'}" alt="{str(tag=editspecific arg1=$itemr->title)|escape:html|safe}">
                 </a>
-                <a href="{$WWWROOT}artefact/checklist/checklist.php?id={$itemr->parent}&amp;itemid={$itemr->item}&amp;direction=0&amp;order={$strorder}" title="{str tag=moveitemup}">
+                <a href="{$WWWROOT}artefact/checklist/checklist.php?id={$itemr->parent}&amp;itemid={$itemr->item}&amp;direction=0&amp;order={$strorder}&amp;offset=0&amp;limit=100" title="{str tag=moveitemup}">
                     <img src="{theme_url filename='images/btn_moveup.png'}" alt="{str(tag=editspecific arg1=$itemr->title)|escape:html|safe}">
                 </a>
 				
@@ -56,8 +65,7 @@
 
 			</tr>
 			<tr>
-				<td colspan="4"><i>{$itemr->description|clean_html|safe}</i></td>
-
+				<td class="normal" colspan="4"><i>{$itemr->description|safe}</i></td>
 			</tr>
 		{/foreach}
     </tbody>

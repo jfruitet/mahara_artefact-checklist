@@ -1855,46 +1855,6 @@ class ArtefactTypeItem extends ArtefactType {
         return $result;
     }
 
-   /**
-     * This function set up or down an item an item artefact .
-     * @input parent checklist id
-     * @input item id
-     *
-     * @return Object
-     */
-    public static function move_item($checklistid, $itemid, $direction){
-        if (!empty($checklistid)){
-			$nbitems=count_records('artefact', 'artefacttype', 'item', 'parent', $checklistid);
-
-        	if ($item1 = get_record_sql("
-							SELECT a.id, ai.displayorder
-							FROM {artefact} a
-            				JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
-                            WHERE a.parent = ? AND a.id = ? AND a.artefacttype = 'item'
-							", array($checklistid, $itemid))){
-
-            	$pos1=$item1->displayorder;
-
-				if ($direction){ // Down
-					$pos2=($item1->displayorder<$nbitems-1) ? $item1->displayorder+1 : $nbitems-1;
-				}
-				else{  // Up
-                	$pos2=($item1->displayorder-1>0)? $item1->displayorder-1 : 0;
-				}
-
-        		if ($item2 = get_record_sql("
-							SELECT a.id
-							FROM {artefact} a
-            				JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
-                            WHERE a.parent = ? AND ai.displayorder = ? AND a.artefacttype = 'item'
-							", array($checklistid, $pos2))){
-					set_field('artefact_checklist_item', 'displayorder', $pos1, 'artefact', $item2->id);
-				}
-                set_field('artefact_checklist_item', 'displayorder', $pos2, 'artefact', $item1->id);
-			}
-		}
-	}
-
 
 
    /**
@@ -1947,6 +1907,55 @@ class ArtefactTypeItem extends ArtefactType {
         $items['pagination_js'] = $pagination['javascript'];
     }
 
+
+    /**
+     * move items up or down
+     * @param checklistid
+     * @param itemid
+     * @param direction
+     */
+	 public static function move_item($checklistid, $itemid, $direction=0){
+		if (!empty($checklistid)){
+			$nbitems = count_records('artefact', 'artefacttype', 'item', 'parent', $checklistid);
+
+        	$item1 = get_record_sql("SELECT a.id, ai.displayorder
+							FROM {artefact} a
+            				JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
+                            WHERE a.parent = ? AND a.id = ? AND a.artefacttype = 'item'", array($checklistid, $itemid));
+			if (!empty($item1)){
+            	$pos1=$item1->displayorder;
+
+				if (!empty($direction)){ // Down
+                	if ($pos1 == $nbitems-1){
+                        roll_items($checklistid, $nbitems, 1);
+						return true;
+					}
+					else{
+						$pos2=($item1->displayorder<$nbitems-1) ? $item1->displayorder+1 : $nbitems-1;
+					}
+				}
+				else{  // Up
+					if ($pos1 == 0){
+						roll_items($checklistid, $nbitems, 0);
+                        return true;
+					}
+					else{
+                		$pos2=($item1->displayorder-1>0)? $item1->displayorder-1 : 0;
+					}
+				}
+
+        		$item2 = get_record_sql("SELECT a.id
+							FROM {artefact} a
+            				JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
+                            WHERE a.parent = ? AND ai.displayorder = ? AND a.artefacttype = 'item'
+							", array($checklistid, $pos2));
+				if (!empty($item2)){
+					set_field('artefact_checklist_item', 'displayorder', $pos1, 'artefact', $item2->id);
+				}
+                set_field('artefact_checklist_item', 'displayorder', $pos2, 'artefact', $item1->id);
+			}
+		}
+	}
 
      // @TODO: make blocktype use this too
     public function render_items(&$items, $template, $options, $pagination) {
@@ -2082,7 +2091,8 @@ class ArtefactTypeItem extends ArtefactType {
 		return($xml);
 	}
 
-   	/**
+
+    	/**
      * This function sets the displayorder of items for a checklist.
      *
      * @param checklistid : parent artefact id
@@ -2090,39 +2100,39 @@ class ArtefactTypeItem extends ArtefactType {
 	 * @param direction 0:up, 1:down
      * @return nothing
      */
-	function reset_list_moveitems($checklistid, $offset, $direction=0){
-		$checklist = get_record_sql_array("SELECT id FROM {artefact}
-			WHERE id=? AND artefacttype = 'checklist' ", array($checklistid));
-		// Items
-        if (!empty($checklist)){
-            $nitems=count_records('artefact', 'artefacttype', 'item', 'parent', $checklistid);
+     function roll_items($checklistid, $nitems, $direction=0){
+        if (!empty($checklistid)){
+			$items = get_records_sql_array("SELECT a.id
+					FROM {artefact} a
+            			JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
+                	WHERE a.parent = ? AND a.artefacttype = 'item'
+					ORDER BY ai.displayorder ASC", array($checklistid) );
 
-			if ($direction){ // down from $offset to $nitems
-				$items = get_records_sql_array("SELECT a.id
-					FROM {artefact} a
-            			JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
-                	WHERE a.parent = ? AND a.artefacttype = 'item'
-					ORDER BY ai.code ASC", array($checklist->id), $offset, $nitems );
-				if (!empty($items)){
-	            	$counter=$offset;
+			if (!empty($items)){
+				if (!empty($direction)){ // down
+			    	$counter=0;
     	        	foreach ($items as $item) {
-        	    		set_field('artefact_checklist_item', 'displayorder', $counter, 'artefact', $item->id);
-            	    	$counter++;
-		        	}
+            	    	if ($counter<$nitems-1){
+							$counter++;
+		        		}
+						else{
+                        	$counter = 0;
+						}
+                    	set_field('artefact_checklist_item', 'displayorder', $counter, 'artefact', $item->id);
+					}
 				}
-			}
-			else{  // up from 0 to $offset
-				$items = get_records_sql_array("SELECT a.id
-					FROM {artefact} a
-            			JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
-                	WHERE a.parent = ? AND a.artefacttype = 'item'
-					ORDER BY ai.code ASC", array($checklist->id), 0, $offset );
-				if (!empty($items)){
-	            	$counter=0;
+				else{
+			    	$counter=0;
     	        	foreach ($items as $item) {
-        	    		set_field('artefact_checklist_item', 'displayorder', $counter, 'artefact', $item->id);
-            	    	$counter++;
-		        	}
+            	    	if ($counter==0){
+							$pos=$nitems-1;
+		        		}
+						else{
+                        	$pos=$counter-1;
+						}
+                        $counter++;
+                    	set_field('artefact_checklist_item', 'displayorder', $pos, 'artefact', $item->id);
+					}
 				}
 			}
 		}

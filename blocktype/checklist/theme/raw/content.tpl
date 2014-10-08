@@ -9,8 +9,8 @@
     </thead>
     <tbody>
     <tr>
-			<td>{if $chkdescription} {$chkdescription}{/if}</td>
-            <td>{if $chkmotivation} {$chkmotivation}{/if}</td>
+			<td>{if $chkdescription} {$chkdescription|clean_html|safe}{/if}</td>
+            <td>{if $chkmotivation} {$chkmotivation|clean_html|safe}{/if}</td>
     </tr>
     </tbody>
 </table>
@@ -34,8 +34,19 @@
 		{foreach from=$items.data item=itemr}
 			<tr class="{cycle values='r0,r1'}">
 				<td>{$itemr->code|safe}</td>
-				<td>{$itemr->title|safe}</td>
-				<td>{$itemr->scale|safe}</td>
+				<td>
+				{if $itemr->optionitem == 0}
+						{$itemr->title|safe}
+				{else}
+						{if $itemr->optionitem == 1}
+							<i>{$itemr->title|safe}</i>				
+						{else}
+							<h5>{$itemr->title|safe}</h5>
+						{/if}
+				{/if}
+				</td>
+
+				<td>{$itemr->scale|clean_html|safe}</td>
 <!--
 				<td>{$itemr->valueindex|safe}</td>
 -->

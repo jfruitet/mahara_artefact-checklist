@@ -19,6 +19,7 @@ require_once(get_config('docroot') . 'artefact/checklist/blocktype/checklist/lib
 
 $offset = param_integer('offset', 0);
 $limit = param_integer('limit', 10);
+$order = param_alpha('order', 'ASC');
 
 if ($blockid = param_integer('block', null)) {
     $bi = new BlockInstance($blockid);
@@ -27,7 +28,7 @@ if ($blockid = param_integer('block', null)) {
     }
     $options = $configdata = $bi->get('configdata');
 
-    $items = ArtefactTypeItem::get_items($configdata['artefactid'], $offset, $limit);
+    $items = ArtefactTypeItem::get_items($configdata['artefactid'], $offset, $limit, $order);
 
     $template = 'artefact:checklist:itemrows.tpl';
     $baseurl = $bi->get_view()->get_url();
@@ -46,7 +47,7 @@ else {
         json_reply(true, get_string('accessdenied', 'error'));
     }
     $options = array('viewid' => $viewid);
-    $items = ArtefactTypeItem::get_items($checklistid, $offset, $limit);
+    $items = ArtefactTypeItem::get_items($checklistid, $offset, $limit, $order);
 
     $template = 'artefact:checklist:itemrows.tpl';
     $baseurl = get_config('wwwroot') . 'view/artefact.php?artefact=' . $checklistid . '&view=' . $options['viewid'];

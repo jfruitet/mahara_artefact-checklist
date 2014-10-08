@@ -16,6 +16,26 @@
     margin: 0 0 5px;
 }
 
+/* plan tasks */
+td.normal{
+    text-align: left;
+    background-color: white;
+	color: black;
+}
+
+td.header{
+    text-align: left;
+    background-color: white;
+	color: navy;
+    font-weight: bold;
+}
+
+td.optionnal {
+    text-align: left;
+    background-color: #aaaabb;
+	color: white;
+}
+
 .surligne {
 	background-color: Yellow;
 	color: Navy;

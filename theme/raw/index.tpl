@@ -4,6 +4,7 @@
 <div id="checklistwrap">
 <br />
 <br />
+<br />
     <div class="rbuttons">
         <a class="btn" href="{$WWWROOT}artefact/checklist/new.php">{str section="artefact.checklist" tag="newchecklist"}</a>
     </div>
