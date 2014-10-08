@@ -1384,6 +1384,8 @@ class ArtefactTypeItem extends ArtefactType {
     protected $code = 0;
     protected $scale = '';
     protected $valueindex = 0;
+    protected $optionitem = 0;
+    protected $displayorder = 0;
 
     /**
      * We override the constructor to fetch the extra data.
@@ -1449,12 +1451,15 @@ class ArtefactTypeItem extends ArtefactType {
 
         $this->dirty = true;
 
-        $data = (object)array(
+		$data = (object)array(
 			'code'      	=> $this->get('code'),
 			'artefact'  	=> $this->get('id'),
             'scale' 		=> $this->get('scale'),
-            'valueindex' 	=> $this->get('valueindex')
+            'valueindex' 	=> $this->get('valueindex'),
+            'optionitem' 	=> $this->get('optionitem'),
+            'displayorder'  => $this->get('displayorder'),
         );
+
         //echo "$data->scale<br />\n";
 		// scale verification
         if (!empty($data->scale) && preg_match("/;/",$data->scale)){
@@ -1493,6 +1498,7 @@ class ArtefactTypeItem extends ArtefactType {
 		else{
             $data->valueindex = 0;
 		}
+
 
         if ($new) {
             $success = insert_record('artefact_checklist_item', $data);
@@ -1588,6 +1594,15 @@ class ArtefactTypeItem extends ArtefactType {
     *
     */
     public static function get_itemform_elements($parent, $item=null) {
+
+		// position in the list
+  		if (!empty($item)) {
+			$position = $item->displayorder;
+		}
+		else{
+            $position = -1;
+		}
+
         $elements = array(
             'title' => array(
                 'type' => 'text',
@@ -1630,10 +1645,36 @@ class ArtefactTypeItem extends ArtefactType {
                 'title' => get_string('valueindex', 'artefact.checklist'),
                 'description' => get_string('valueindexdesc','artefact.checklist'),
                 'size' => 10,
+            ),
+            'optionitem' => array(
+                'type' => 'radio',
+                'title' => get_string('optionitem', 'artefact.checklist'),
+				'name' => 'optionitem',
+				'id' => 'optionitem',
+                'defaultvalue' => 0,
+                'description' => get_string('optionitemdesc','artefact.checklist'),
                 'rules' => array(
                     'required' => true,
                 ),
+				'options' => array(     // 0 - normal; 1 - optional; 2 - heading
+					0,
+					1,
+					2,
+				),
             ),
+			/*
+            'displayorder' => array(
+                'type' => 'text',
+                'defaultvalue' => 0,
+                'title' => get_string('displayorder', 'artefact.checklist'),
+                'description' => get_string('displayorderdesc','artefact.checklist'),
+                'size' => 10,
+            ),
+			*/
+            'displayorder' => array(
+            	'type' => 'hidden',
+            	'value' => $position,
+        	),
 
         );
 
@@ -1689,6 +1730,21 @@ class ArtefactTypeItem extends ArtefactType {
         $artefact->set('code', $values['code']);
         $artefact->set('scale', $values['scale']);
         $artefact->set('valueindex', $values['valueindex']);
+        $artefact->set('optionitem', $values['optionitem']);
+
+  		// set position of item in list
+        if ($values['displayorder'] < 0){
+            // how many items ?
+			if ($rec = count_nb_items($values['parent'])){
+				$artefact->set('displayorder', $rec['count']);
+			}
+			else{
+                $artefact->set('displayorder', 0);
+			}
+		}
+		else{
+            $artefact->set('displayorder', $values['displayorder']);
+		}
 
         if (get_config('licensemetadata')) {
             $artefact->set('license', $values['license']);
@@ -1714,13 +1770,17 @@ class ArtefactTypeItem extends ArtefactType {
         $datenow = time(); // time now to use for formatting items by completion
 
         ($results = get_records_sql_array("
-            SELECT a.id, at.artefact AS item, at.code, at.scale, at.valueindex,
-                a.title, a.description, a.parent
+            SELECT a.id, at.artefact AS item, at.code, at.scale, at.valueindex, at.optionitem, at.displayorder,
+                a.title, a.description, a.parent, a.mtime
                 FROM {artefact} a
             JOIN {artefact_checklist_item} at ON at.artefact = a.id
             WHERE a.artefacttype = 'item' AND a.parent = ?
-            ORDER BY at.code ".$order, array($checklist), $offset, $limit))
+            ORDER BY at.displayorder ".$order.", at.code ".$order, array($checklist), $offset, $limit))
             || ($results = array());
+
+//            ORDER BY at.code ".$order, array($checklist), $offset, $limit))
+//            || ($results = array());
+//
 
         // format the data and setup completed for display
         if (!empty($results)) {
@@ -1775,8 +1835,8 @@ class ArtefactTypeItem extends ArtefactType {
      */
     public static function get_all_items_raw($chkid) {
         ($results = get_records_sql_array("
-            SELECT a.id, at.artefact AS item, at.code, at.scale, at.valueindex,
-                a.title, a.description, a.parent
+            SELECT a.id, at.artefact AS item, at.code, at.scale, at.valueindex, at.optionitem, at.displayorder,
+                a.title, a.description, a.parent, a.mtime
                 FROM {artefact} a
             JOIN {artefact_checklist_item} at ON at.artefact = a.id
             WHERE a.artefacttype = 'item' AND a.parent = ?
@@ -1795,6 +1855,47 @@ class ArtefactTypeItem extends ArtefactType {
         return $result;
     }
 
+   /**
+     * This function set up or down an item an item artefact .
+     * @input parent checklist id
+     * @input item id
+     *
+     * @return Object
+     */
+    public static function move_item($checklistid, $itemid, $direction){
+        if (!empty($checklistid)){
+			$nbitems=count_records('artefact', 'artefacttype', 'item', 'parent', $checklistid);
+
+        	if ($item1 = get_record_sql("
+							SELECT a.id, ai.displayorder
+							FROM {artefact} a
+            				JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
+                            WHERE a.parent = ? AND a.id = ? AND a.artefacttype = 'item'
+							", array($checklistid, $itemid))){
+
+            	$pos1=$item1->displayorder;
+
+				if ($direction){ // Down
+					$pos2=($item1->displayorder<$nbitems-1) ? $item1->displayorder+1 : $nbitems-1;
+				}
+				else{  // Up
+                	$pos2=($item1->displayorder-1>0)? $item1->displayorder-1 : 0;
+				}
+
+        		if ($item2 = get_record_sql("
+							SELECT a.id
+							FROM {artefact} a
+            				JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
+                            WHERE a.parent = ? AND ai.displayorder = ? AND a.artefacttype = 'item'
+							", array($checklistid, $pos2))){
+					set_field('artefact_checklist_item', 'displayorder', $pos1, 'artefact', $item2->id);
+				}
+                set_field('artefact_checklist_item', 'displayorder', $pos2, 'artefact', $item1->id);
+			}
+		}
+	}
+
+
 
    /**
      * This function returns an item artefact .
@@ -1806,13 +1907,13 @@ class ArtefactTypeItem extends ArtefactType {
     public static function get_item($itemid) {
         global $USER;
 
-        ($checklist = get_record_sql("
+        ($item = get_record_sql("
 							SELECT a.*, ai.*
 							FROM {artefact} a
             				JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
                             WHERE a.id = ? AND a.artefacttype = 'item'
 							", array($itemid)));
-        return $checklist;
+        return $item;
     }
 
     /**
@@ -1876,9 +1977,34 @@ class ArtefactTypeItem extends ArtefactType {
 
 }
 
+	/**
+     * This function returns the number of items from a parent checklist.
+     *
+     * @param checklist : parent artefact id
+     * @return array  (count: integer, data: array)
+     */
+    function count_nb_items($checklist) {
+
+        ($results = get_records_sql_array("
+            SELECT COUNT(a.id) AS nbitems
+			FROM {artefact} a
+            	JOIN {artefact_checklist_item} at ON at.artefact = a.id
+            WHERE a.artefacttype = 'item' AND a.parent = ?", array($checklist)))
+            || ($results = array());
+
+        $result = array(
+            'count'   => $results[0]->nbitems,
+            'id'     => $checklist,
+        );
+
+		//print_object($result);
+		//exit;
+        return $result;
+    }
+
 
     /**
-    * Forat scale display
+    * Format scale display
     *
     */
     function scale_display($scale, $valueindex=0) {
@@ -1956,6 +2082,93 @@ class ArtefactTypeItem extends ArtefactType {
 		return($xml);
 	}
 
+   	/**
+     * This function sets the displayorder of items for a checklist.
+     *
+     * @param checklistid : parent artefact id
+     * @param offset : position to move
+	 * @param direction 0:up, 1:down
+     * @return nothing
+     */
+	function reset_list_moveitems($checklistid, $offset, $direction=0){
+		$checklist = get_record_sql_array("SELECT id FROM {artefact}
+			WHERE id=? AND artefacttype = 'checklist' ", array($checklistid));
+		// Items
+        if (!empty($checklist)){
+            $nitems=count_records('artefact', 'artefacttype', 'item', 'parent', $checklistid);
+
+			if ($direction){ // down from $offset to $nitems
+				$items = get_records_sql_array("SELECT a.id
+					FROM {artefact} a
+            			JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
+                	WHERE a.parent = ? AND a.artefacttype = 'item'
+					ORDER BY ai.code ASC", array($checklist->id), $offset, $nitems );
+				if (!empty($items)){
+	            	$counter=$offset;
+    	        	foreach ($items as $item) {
+        	    		set_field('artefact_checklist_item', 'displayorder', $counter, 'artefact', $item->id);
+            	    	$counter++;
+		        	}
+				}
+			}
+			else{  // up from 0 to $offset
+				$items = get_records_sql_array("SELECT a.id
+					FROM {artefact} a
+            			JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
+                	WHERE a.parent = ? AND a.artefacttype = 'item'
+					ORDER BY ai.code ASC", array($checklist->id), 0, $offset );
+				if (!empty($items)){
+	            	$counter=0;
+    	        	foreach ($items as $item) {
+        	    		set_field('artefact_checklist_item', 'displayorder', $counter, 'artefact', $item->id);
+            	    	$counter++;
+		        	}
+				}
+			}
+		}
+	}
 
 
-?>
+
+   	/**
+     * This function sets the displayorder of items for a checklist.
+     *
+     * @param checklistid : parent artefact id
+     * @return nothing
+     */
+	function reset_list_displayorder($checklistid){
+		$checklist = get_record_sql_array("SELECT id FROM {artefact}
+			WHERE id=? AND artefacttype = 'checklist' ", array($checklistid));
+		// Items
+        if (!empty($checklist)){
+			$items = get_records_sql_array("SELECT a.id
+				FROM {artefact} a
+            		JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
+                WHERE a.parent = ? AND a.artefacttype = 'item'
+				ORDER BY ai.code ASC", array($checklist->id));
+			if (!empty($items)){
+	            $counter=0;
+    	        foreach ($items as $item) {
+        	    	set_field('artefact_checklist_item', 'displayorder', $counter, 'artefact', $item->id);
+            	    $counter++;
+		        }
+			}
+		}
+	}
+
+	/**
+     * This function sets the displayorder of items for all checklists.
+     *
+     * @return nothing
+     */
+	function reset_alllists_displayorder(){
+		$checklists = get_records_sql_array("SELECT id FROM {artefact} WHERE artefacttype = 'checklist' ", array());
+		//print_object($checklists);
+        if (!empty($checklists)) {
+            foreach ($checklists as $checklist) {
+				reset_list_displayorder($checklist->id);
+			}
+		}
+	}
+
+

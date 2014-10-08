@@ -4,6 +4,7 @@
             <td>{$itemr->title}</td>
             <td>{$itemr->scale|clean_html|safe}</td>			
 			<td>{$itemr->valueindex}</td>
+<!--			<td>{$itemr->optionitem}</td> -->
 		
 	</tr>
 	<tr>

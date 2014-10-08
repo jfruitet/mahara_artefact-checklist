@@ -1,6 +1,7 @@
 {include file="header.tpl"}
 <div id="checklistwrap">
-<br /><br />
+<br /><br /><br />
+
     <div class="rbuttons">
         <a class="btn" href="{$WWWROOT}artefact/checklist/new.php?id={$checklist}">{str section="artefact.checklist" tag="newitem"}</a>
     </div>
@@ -23,6 +24,7 @@
             <th width="70%">{str tag='title' section='artefact.checklist'}
 			<th width="10%">{str tag='scale' section='artefact.checklist'}</th>
 <!--			<th>{str tag='valueindex' section='artefact.checklist'}</th> -->
+<!--			<th>{str tag='optionitem' section='artefact.checklist'}</th> -->
 <th with="10%">&nbsp;</th>
         </tr>
     </thead>
@@ -33,6 +35,7 @@
 				<td>{$itemr->title|safe}</td>
 				<td>{$itemr->scale|clean_html|safe}</td>
 <!--				<td>{$itemr->valueindex|safe}</td>  -->
+<!--				<td>{$itemr->optionitem|safe}</td>  -->
 				<td class="buttonscell btns2 planscontrols"> 
  				
                 <a href="{$WWWROOT}artefact/checklist/edit/item.php?id={$itemr->item}" title="{str tag=edit}">
@@ -41,6 +44,14 @@
                 <a href="{$WWWROOT}artefact/checklist/delete/item.php?id={$itemr->item}" title="{str tag=delete}">
                     <img src="{theme_url filename='images/btn_deleteremove.png'}" alt="{str(tag=deletespecific arg1=$itemr->title)|escape:html|safe}">
                 </a>
+                <a href="{$WWWROOT}artefact/checklist/checklist.php?id={$itemr->parent}&amp;itemid={$itemr->item}&amp;direction=1&amp;order={$strorder}" title="{str tag=moveitemdown}">
+                    <img src="{theme_url filename='images/btn_movedown.png'}" alt="{str(tag=editspecific arg1=$itemr->title)|escape:html|safe}">
+                </a>
+                <a href="{$WWWROOT}artefact/checklist/checklist.php?id={$itemr->parent}&amp;itemid={$itemr->item}&amp;direction=0&amp;order={$strorder}" title="{str tag=moveitemup}">
+                    <img src="{theme_url filename='images/btn_moveup.png'}" alt="{str(tag=editspecific arg1=$itemr->title)|escape:html|safe}">
+                </a>
+				
+
 				</td>				
 
 			</tr>

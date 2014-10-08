@@ -22,10 +22,13 @@
             <th class="c1">{str tag='code' section='artefact.checklist'}</th>
             <th class="c2">{str tag='title' section='artefact.checklist'}</th>
             <th class="c4">{str tag='scale' section='artefact.checklist'}</th>
-<!--
-			<th class="c5">{str tag='validated' section='artefact.checklist'}</th>
--->
-        </tr>
+			{if $itemr->description}
+				<tr>
+					<th class="c5" colspan="4">
+					{str tag='description' section='artefact.checklist'}
+					</th>
+			{/if}
+		</tr>
     </thead>
     <tbody>
 		{foreach from=$items.data item=itemr}
@@ -36,12 +39,11 @@
 <!--
 				<td>{$itemr->valueindex|safe}</td>
 -->
-			</tr>
 			{if $itemr->description}
 			<tr>
 				<td colspan="4"><i>{$itemr->description|clean_html|safe}</i></td>    
-			</tr>
 			{/if}
+			</tr>
 		{/foreach}
     </tbody>
 </table>

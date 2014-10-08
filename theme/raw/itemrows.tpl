@@ -5,6 +5,7 @@
 				<td>{$itemr->title}</td>                      
 				<td>{$itemr->scale}</td>
 				<td>{$itemr->valueindex}</td>
+<!--				<td>{$itemr->optionitem}</td>  -->
             </tr>
 			{if $itemr->description}
 			<tr>

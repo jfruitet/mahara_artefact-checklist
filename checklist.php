@@ -25,6 +25,8 @@ if (!PluginArtefactChecklist::is_active()) {
 
 
 $id = param_integer('id');
+$itemid = param_integer('itemid', 0); // item id to move
+$direction = param_integer('direction', 0); // 0 : move up or 1 : move down
 
 // offset and limit for pagination
 $offset = param_integer('offset', 0);
@@ -37,6 +39,14 @@ if (!$USER->can_edit_artefact($artefact)) {
 }
 
 define('TITLE', get_string('Items', 'artefact.checklist', $artefact->get('title') ));
+
+// move item up or down
+if (!empty($itemid)){
+	if ($order=='DESC'){
+        $direction = $direction ? 0 : 1;
+	}
+    ArtefactTypeItem::move_item($artefact->get('id'), $itemid, $direction);
+}
 
 $items = ArtefactTypeItem::get_items($artefact->get('id'), $offset, $limit, $order);
 //print_object($items);
@@ -56,6 +66,8 @@ $smarty->assign_by_ref('items', $items);
 $smarty->assign_by_ref('checklist', $id);
 $smarty->assign_by_ref('tags', $artefact->get('tags'));
 $smarty->assign_by_ref('owner', $artefact->get('owner'));
+
+
 if ($limit<$items['count']){
 	$smarty->assign('urlallitems', '<a href="' . get_config('wwwroot') . 'artefact/checklist/checklist.php?id='.$artefact->get('id').'&amp;offset=0&amp;limit='.$items['count'].'">'.get_string('allitems','artefact.checklist',$items['count']).'</a>');
 }
@@ -70,6 +82,7 @@ else{
 }
 
 $smarty->assign('iconcheckpath', ArtefactTypeChecklist::get_icon_checkpath());
+$smarty->assign('strorder', $order);
 
 $smarty->assign('strnoitemsaddone',
     get_string('noitemaddone', 'artefact.checklist',
