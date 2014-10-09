@@ -105,10 +105,6 @@ if (!empty($artefactitems)){
 		}
 }
 
-// Debug
-//echo "<br />DEBUG :: exportxml.php :: 100<br />\n";
-//print_object($exportclass);
-//exit;
 // XML export here
 
 $name = "exported_checklist_" . implode('_', explode(' ',trim($exportclass->title . date("_Y_m_d"))));
