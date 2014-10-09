@@ -96,6 +96,8 @@ if (!empty($artefactitems)){
         	$item->code = $aitem->code;
         	$item->scale = $aitem->scale;
         	$item->valueindex = ($resetitems) ? 0 : $aitem->valueindex;
+            $item->optionitem = $aitem->optionitem;
+            $item->displayorder = $aitem->displayorder;
 /*
             if (get_config('licensemetadata')) {
             	$item->license = $aitem->license;

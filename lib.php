@@ -1840,7 +1840,7 @@ class ArtefactTypeItem extends ArtefactType {
                 FROM {artefact} a
             JOIN {artefact_checklist_item} at ON at.artefact = a.id
             WHERE a.artefacttype = 'item' AND a.parent = ?
-            ORDER BY a.id", array($chkid)))
+            ORDER BY at.displayorder ASC", array($chkid)))
             || ($results = array());
 
         $n=count_records('artefact', 'artefacttype', 'item', 'parent', $chkid);
@@ -2079,7 +2079,8 @@ class ArtefactTypeItem extends ArtefactType {
         	$docitem->setAttribute('code', $item->code);
         	$docitem->setAttribute('scale', $item->scale);
         	$docitem->setAttribute('valueindex', $item->valueindex);
-
+            $docitem->setAttribute('optionitem', $item->optionitem);
+            $docitem->setAttribute('displayorder', $item->displayorder);
 			$docchk->appendChild($docitem);
 		}
 
@@ -2092,7 +2093,7 @@ class ArtefactTypeItem extends ArtefactType {
 	}
 
 
-    	/**
+    /**
      * This function sets the displayorder of items for a checklist.
      *
      * @param checklistid : parent artefact id
