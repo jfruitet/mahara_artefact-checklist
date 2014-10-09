@@ -269,7 +269,7 @@ function create_checklist_csv($title, $description, $motivation, $public, $name,
 // JF 2014
 if ($handle = fopen($filename, "r")){
     $line = 0; // will keep track of current line, to give better error messages.
-
+    $counteritem=0; // how many items ?
     $motivation = $motivation.' '. get_string('outcomes', 'artefact.checklist', $name);
 	$newtitle='';
 
@@ -385,12 +385,15 @@ if ($handle = fopen($filename, "r")){
         $datai['code'] = $outcome_data['shortname'];
    	    $datai['scale'] = $outcome_data['scale'];
       	$datai['valueindex'] = 0;
+        $datai['optionitem'] = 0;
+        $datai['displayorder'] = $counteritem;
         // DEBUG
 		// print_object($datai);
 		// exit;
     	$classname = 'ArtefactTypeItem';
    		$ai = new $classname(0, $datai);
    		$ai->commit();
+        $counteritem++;
 	}
     if (!empty($newtitle)){
 		$description = $ac->get('description');
