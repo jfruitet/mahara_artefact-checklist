@@ -1620,9 +1620,9 @@ class ArtefactTypeItem extends ArtefactType {
                 'title' => get_string('code', 'artefact.checklist'),
                 'description' => get_string('codeitemdesc','artefact.checklist'),
                 'size' => 30,
-                'rules' => array(
-                    'required' => true,
-                ),
+//                'rules' => array(
+//                    'required' => true,
+//                ),
             ),
             'description' => array(
                 'type'  => 'wysiwyg',

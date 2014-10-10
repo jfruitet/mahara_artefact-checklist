@@ -5,6 +5,8 @@
 <br />
 <br />
 {$importformcsv|safe}
-
+<br />
+<br />
+{$importformmoodlecsv|safe}
 </div>
 {include file="footer.tpl"}

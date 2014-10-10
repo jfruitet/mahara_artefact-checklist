@@ -138,12 +138,14 @@ function import_submit_xml (Pieform $form, $values) {
     $goto = get_config('wwwroot') . '/artefact/checklist/index.php';
     redirect($goto);
 }
+
+
 /**
  * Import a Moodle Outcome csv file format
  *
  */
 
-class ArtefactTypeImportChecklistCsv extends ArtefactTypeChecklist {
+class ArtefactTypeImportChecklistOutcomes extends ArtefactTypeChecklist {
     public static function is_singular() { return true;  }
     public static function get_form() {
         $importformcsv = pieform(
@@ -403,16 +405,309 @@ if ($handle = fopen($filename, "r")){
 }
 }
 
+
+
+/**
+ * Import a Moodle Outcome csv file format
+ *
+ */
+
+class ArtefactTypeImportChecklistMoodle extends ArtefactTypeChecklist {
+    public static function is_singular() { return true;  }
+    public static function get_form() {
+        $importformmoodlecsv = pieform(
+		array(
+            'name'        => 'importformmoodlecsv',
+            'plugintype'  => 'artefact',
+            'successcallback' => 'import_submit_moodlecsv',
+            'pluginname'  => 'checklist',
+            'method'      => 'post',
+            'elements'    => array(
+				'optionnal' => array(
+	            	'type' => 'fieldset',
+	    	        'name' => 'csvfield',
+					'title' => 'importmoodlecsv',
+        		    'collapsible' => true,
+            		'collapsed' => true,
+	            	'legend' => get_string('descimportmoodlecsv','artefact.checklist'),
+                	'elements' => array(
+						'help'  => array(
+                        	'title' => get_string('documentation','artefact.checklist'),
+                        	'type' => 'html',
+							'value' =>  get_string('urlimportmoodlecsv','artefact.checklist'),
+						),
+                        'title' => array(
+                   			'type' => 'text',
+			                'defaultvalue' => null,
+    			            'title' => get_string('title', 'artefact.checklist'),
+        			        'size' => 80,
+            			    'rules' => array(
+                			    'required' => true,
+		    	            ),
+			            ),
+        			    'description' => array(
+	        		        'type'  => 'text',
+                            'defaultvalue' => null,
+	       			        'size' => 80,
+		    	            'title' => get_string('description', 'artefact.checklist'),
+    		    	    ),
+	        		    'motivation' => array(
+	        		        'type'  => 'text',
+                            'defaultvalue' => null,
+	       			        'size' => 80,
+	    	            	'title' => get_string('motivation', 'artefact.checklist'),
+		    	        ),
+    		    	    'public' => array(
+        		    	    'type'  => 'radio',
+	            			'options' => array(
+    	            			0 => get_string('no'),
+	    	            		1 => get_string('yes'),
+		    	        	),
+    		    	    	'defaultvalue' => 0,
+        		    		'rules' => array(
+                				'required' => true,
+            				),
+	            			'separator' => ' &nbsp; ',
+    	            		'title' => get_string('publiclist', 'artefact.checklist'),
+        	        		'description' => get_string('publiclistdesc','artefact.checklist'),
+						),
+                        'scale' => array(
+	        		        'type'  => 'text',
+                            'defaultvalue' => null,
+	       			        'size' => 80,
+	    	            	'title' => get_string('scale', 'artefact.checklist'),
+                            'description' => get_string('scaledesc', 'artefact.checklist'),
+		    	        ),
+    	            	'filename' => array(
+        	            	'type' => 'file',
+	        	            'title' => get_string('filename', 'artefact.checklist'),
+    	        	        'rules' => array('required' => true),
+        	        	    'maxfilesize'  => get_max_upload_size(false),
+	            	    ),
+    	            	'save' => array(
+	    	                'type' => 'submit',
+    	    	            'value' => get_string('import', 'artefact.checklist'),
+        	    	    ),
+/*
+	            	    'save' => array(
+    	            	    'type' => 'submitcancel',
+        	            	'value' => get_string('import', 'artefact.checklist'),
+							'goto' => get_config('wwwroot') . 'artefact/checklist/index.php',
+                		),
+*/
+					),
+            	),
+        	),
+		)
+		);
+        return $importformmoodlecsv;
+    }
+}
+
+
+function import_submit_moodlecsv(Pieform $form, $values) {
+    global $USER, $SESSION;
+
+	$title = !empty($values['title'])?$values['title']:'';
+    $description = !empty($values['description'])?$values['description']:'';
+    $motivation = !empty($values['motivation'])?$values['motivation']:'';
+    $public = !empty($values['public'])?$values['public']:0;
+    $scale = !empty($values['scale'])?$values['scale']:'NA,ECA,PA,A';
+	if (!empty($values['filename']   )){
+		// DEBUG
+		//echo "<br /> import.php :: 241 :: FILENAME <br />\n";
+		//print_object( $values['filename']  );
+		//exit;
+	 	$name =  $values['filename']['name'];
+		$type = $values['filename']['type'];
+        $filename = $values['filename']['tmp_name'];
+		// test correct type of file
+		$ok = ($type == 'text/csv') || (strripos($name, ".csv")) ? 1 : 0;
+	    // $values['filename']['type']=='text/csv') works with admin role, but not with user role ! Why ?
+        if (file_exists($filename) && $ok) {
+		    create_checklist_moodlecsv($title, $description, $motivation, $public, $name, $filename, $USER->get('id'));
+    	}
+    	else {
+        	$SESSION->add_error_msg(get_string('loadcsvfailedfilenonexist', 'artefact.checklist', $name));
+	    }
+	}
+   	redirect(get_config('wwwroot') . '/artefact/checklist/index.php');
+}
+
+
+/**
+ * checklist + item load from moodle/mod/checklist plugin
+ * @input handle file
+ * @input owner  USER id
+ * @return none
+ **/
+function create_checklist_moodlecsv($title, $description, $motivation, $public, $name, $filename, $owner, $scale='NA,ECA,PA,A') {
+// from moodle/mod/checklist plugin import / export format
+// JF 2014
+$separator = ',';
+
+if ($handle = fopen($filename, "r")){
+    $line = 0; // will keep track of current line, to give better error messages.
+    $counteritem=0; // how many items ?
+    $motivation = $motivation.' '. get_string('outcomes', 'artefact.checklist', $name);
+
+	$file_headers = '';
+
+   // $csv_data needs to have at least these columns, the value is the default position in the data file.
+    $headers = array('Item text' => 0, 'Indent' => 1, 'Type (0 - normal; 1 - optional; 2 - heading)' => 2, 'Due Time (timestamp)' => 3, 'Colour (red; orange; green; purple; black)' => 4);
+
+    $optional_headers = array();
+    $imported_headers = array(); // will later be initialized with the values found in the file
+
+    $fatal_error = false;
+
+	// Save artefact
+	$data = new stdClass();
+	$data->owner = $owner;
+    $data->title = $title;
+	if (empty($description)){
+		$data->description = get_string('outcomesdesc', 'artefact.checklist');
+	}
+	else{
+        $data->description = $description;
+	}
+    $data->description .= ' '. get_string('imported', 'artefact.checklist', date("Y-m-d H:i:s"));
+    $data->motivation = $motivation;
+	$data->public = $public;
+	// Debug
+	// print_object($data      );
+
+	$classname = 'ArtefactTypeChecklist';
+	$ac = new $classname(0, $data);
+	$ac->commit();
+
+    // data should be separated by a ';'.  *NOT* by a comma!  TODO: version 2.0
+    // or whenever we can depend on PHP5, set the second parameter (8192) to 0 (unlimited line length) : the database can store over 128k per line.
+    while ( $csv_data = fgetcsv($handle, 8192, $separator, '"')) { // if the line is over 8k, it won't work...
+        $line++;
+
+		//print_object($csv_data      );
+
+        // be tolerant on input, as fgetcsv returns "an array comprising a single null field" on blank lines
+        if ($csv_data == array(null)) {
+            continue;
+        }
+
+        // on first run, grab and analyse the header
+        if ($file_headers == '') {
+            $file_headers = array_flip($csv_data); // save the header line ... TODO: use the header line to let import work with columns in arbitrary order
+// Item text,Indent,Type (0 - normal; 1 - optional; 2 - heading),Due Time (timestamp),Colour (red; orange; green; purple; black)
+            $error = false;
+            foreach($headers as $key => $value) {
+                // sanity check #1: make sure the file contains all the mandatory headers
+                if (!array_key_exists($key, $file_headers)) {
+                    $error = true;
+                    break;
+                }
+            }
+            if ($error) {
+                $fatal_error = true;
+                break;
+            }
+
+            foreach(array_merge($headers, $optional_headers) as $header => $position) {
+                // match given columns to expected columns *into* $headers
+                $imported_headers[$header] = $file_headers[$header];
+            }
+
+            continue; // we don't import headers
+        }
+
+        // sanity check #2: every line must have the same number of columns as there are
+        // headers.  If not, processing stops.
+        if ( count($csv_data) != count($file_headers) ) {
+           $fatal_error = true;
+            break;
+        }
+
+        // sanity check #3: all required fields must be present on the current line.
+        foreach ($headers as $header => $position) {
+            if ($csv_data[$imported_headers[$header]] == '') {
+                $fatal_error = true;
+                break;
+            }
+        }
+
+        // MDL-17273 errors in csv are not preventing import from happening. We break from the while loop here
+        if ($fatal_error) {
+            break;
+        }
+		// Items
+// Item text,Indent,Type (0 - normal; 1 - optional; 2 - heading),Due Time (timestamp),Colour (red; orange; green; purple; black)
+
+// Domaine 1,0,2,0,green
+// C2i1 D1.1.1 :: Organiser un espace de travail complexe,1,1,0,0
+
+		if (preg_match("/ :: /", $csv_data[$imported_headers['Item text']])){
+			$pos = strpos($csv_data[$imported_headers['Item text']], " :: ");
+			$code=substr($csv_data[$imported_headers['Item text']], 0, $pos);
+           	$title=substr($csv_data[$imported_headers['Item text']], $pos+4);
+		}
+		else{
+			if ($csv_data[$imported_headers['Type (0 - normal; 1 - optional; 2 - heading)']] === 2){
+				$code=' ';
+			}
+			else{
+               $code='Item '.$counteritem;
+			}
+			$title=$csv_data[$imported_headers['Item text']];
+		}
+
+
+        $outcome_data = array(
+			'title' => $title,
+            'description' => '',
+			'code' => $code,
+            'scale' => $scale,
+            'optionitem' => $csv_data[$imported_headers['Type (0 - normal; 1 - optional; 2 - heading)']],
+			);
+
+		$datai= array();
+       	$datai['artefact'] = $ac->get('id');
+        $datai['parent'] = $ac->get('id');
+   	    $datai['owner'] = $owner;
+      	$datai['title'] = $outcome_data['title'];
+        $datai['code'] = $outcome_data['code'];
+   	    $datai['scale'] = $outcome_data['scale'];
+      	$datai['valueindex'] = 0;
+        $datai['optionitem'] = $outcome_data['optionitem'];
+        $datai['displayorder'] = $counteritem;
+        // DEBUG
+		//print_object($datai);
+		//exit;
+    	$classname = 'ArtefactTypeItem';
+   		$ai = new $classname(0, $datai);
+   		$ai->commit();
+        $counteritem++;
+	}
+    if (!empty($newtitle)){
+		$description = $ac->get('description');
+		$ac->set('description', $description . "\n<br /><b>$newtitle</b>\n");
+		$ac->commit();
+	}
+}
+}
+
+
 // Xml file
 $importformxml = ArtefactTypeImportChecklistXml::get_form();
 
 // Csv file
-$importformcsv = ArtefactTypeImportChecklistCsv::get_form();
+$importformcsv = ArtefactTypeImportChecklistOutcomes::get_form();
+
+// Csv Moodle checklist form file
+$importformmoodlecsv = ArtefactTypeImportChecklistMoodle::get_form();
 
 $smarty = smarty(array('tablerenderer','jquery'));
 $smarty->assign('PAGEHEADING', hsc(get_string('import', 'artefact.checklist')));
 $smarty->assign('importformxml', $importformxml);
 $smarty->assign('importformcsv', $importformcsv);
+$smarty->assign('importformmoodlecsv', $importformmoodlecsv);
 $smarty->assign('SUBPAGENAV', PluginArtefactChecklist::submenu_items());
 $smarty->display('artefact:checklist:import.tpl');
 
