@@ -19,6 +19,8 @@ $string['checklistsaved'] = 'Liste enregistrée';
 $string['checklistsavedsuccessfully'] = 'Liste enregistrée.';
 $string['code'] = 'Code';
 $string['codeitemdesc'] = 'L\'unicité du code n\'est pas requise.';
+$string['codeprefix'] = 'Code prefix';
+$string['codeprefixdesc'] = 'Préfixe à ajouter au numéro d\'item pour générer le code.';
 $string['deletechecklist'] =  'Supprimer la Liste';
 $string['deletechecklistconfirm'] =  'Confirmer la suppression de la liste';
 $string['deleteitem'] =  'Supprimer Item';
@@ -106,4 +108,3 @@ $string['validatespecific'] = 'Evaluation des Items de "%s"';
 $string['validation'] = 'Evaluation';
 $string['valueindex'] = 'Index barème';
 $string['valueindexdesc'] = 'Valeur d\'index dans le barème [0..NbElementBarème[';
-

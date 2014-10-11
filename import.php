@@ -145,7 +145,7 @@ function import_submit_xml (Pieform $form, $values) {
  *
  */
 
-class ArtefactTypeImportChecklistOutcomes extends ArtefactTypeChecklist {
+class ArtefactTypeImportOutcomesMoodle extends ArtefactTypeChecklist {
     public static function is_singular() { return true;  }
     public static function get_form() {
         $importformcsv = pieform(
@@ -408,7 +408,7 @@ if ($handle = fopen($filename, "r")){
 
 
 /**
- * Import a Moodle Outcome csv file format
+ * Import a Moodle CheckList csv file format
  *
  */
 
@@ -471,10 +471,18 @@ class ArtefactTypeImportChecklistMoodle extends ArtefactTypeChecklist {
     	            		'title' => get_string('publiclist', 'artefact.checklist'),
         	        		'description' => get_string('publiclistdesc','artefact.checklist'),
 						),
+                        'codeprefix' => array(
+	        		        'type'  => 'text',
+                            'defaultvalue' => null,
+	       			        'size' => 20,
+	    	            	'title' => get_string('codeprefix', 'artefact.checklist'),
+                            'description' => get_string('codeprefixdesc', 'artefact.checklist'),
+		    	        ),
+
                         'scale' => array(
 	        		        'type'  => 'text',
                             'defaultvalue' => null,
-	       			        'size' => 80,
+	       			        'size' => 40,
 	    	            	'title' => get_string('scale', 'artefact.checklist'),
                             'description' => get_string('scaledesc', 'artefact.checklist'),
 		    	        ),
@@ -512,6 +520,7 @@ function import_submit_moodlecsv(Pieform $form, $values) {
     $description = !empty($values['description'])?$values['description']:'';
     $motivation = !empty($values['motivation'])?$values['motivation']:'';
     $public = !empty($values['public'])?$values['public']:0;
+    $codeprefix = !empty($values['codeprefix'])?$values['codeprefix']:'Item';
     $scale = !empty($values['scale'])?$values['scale']:'NA,ECA,PA,A';
 	if (!empty($values['filename']   )){
 		// DEBUG
@@ -525,7 +534,7 @@ function import_submit_moodlecsv(Pieform $form, $values) {
 		$ok = ($type == 'text/csv') || (strripos($name, ".csv")) ? 1 : 0;
 	    // $values['filename']['type']=='text/csv') works with admin role, but not with user role ! Why ?
         if (file_exists($filename) && $ok) {
-		    create_checklist_moodlecsv($title, $description, $motivation, $public, $name, $filename, $USER->get('id'));
+		    create_checklist_moodlecsv($title, $description, $motivation, $public, $name, $filename, $USER->get('id') ,$scale, $codeprefix);
     	}
     	else {
         	$SESSION->add_error_msg(get_string('loadcsvfailedfilenonexist', 'artefact.checklist', $name));
@@ -541,7 +550,7 @@ function import_submit_moodlecsv(Pieform $form, $values) {
  * @input owner  USER id
  * @return none
  **/
-function create_checklist_moodlecsv($title, $description, $motivation, $public, $name, $filename, $owner, $scale='NA,ECA,PA,A') {
+function create_checklist_moodlecsv($title, $description, $motivation, $public, $name, $filename, $owner, $scale='NA,ECA,PA,A', $codeprefix='Item') {
 // from moodle/mod/checklist plugin import / export format
 // JF 2014
 $separator = ',';
@@ -649,15 +658,9 @@ if ($handle = fopen($filename, "r")){
            	$title=substr($csv_data[$imported_headers['Item text']], $pos+4);
 		}
 		else{
-			if ($csv_data[$imported_headers['Type (0 - normal; 1 - optional; 2 - heading)']] === 2){
-				$code=' ';
-			}
-			else{
-               $code='Item '.$counteritem;
-			}
+            $code=$codeprefix.' '.$counteritem;
 			$title=$csv_data[$imported_headers['Item text']];
 		}
-
 
         $outcome_data = array(
 			'title' => $title,
@@ -698,7 +701,7 @@ if ($handle = fopen($filename, "r")){
 $importformxml = ArtefactTypeImportChecklistXml::get_form();
 
 // Csv file
-$importformcsv = ArtefactTypeImportChecklistOutcomes::get_form();
+$importformcsv = ArtefactTypeImportOutcomesMoodle::get_form();
 
 // Csv Moodle checklist form file
 $importformmoodlecsv = ArtefactTypeImportChecklistMoodle::get_form();
