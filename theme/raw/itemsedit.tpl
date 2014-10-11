@@ -58,8 +58,10 @@
                 </a>
                 <a href="{$WWWROOT}artefact/checklist/checklist.php?id={$itemr->parent}&amp;itemid={$itemr->item}&amp;direction=0&amp;order={$strorder}&amp;offset=0&amp;limit=100" title="{str tag=moveitemup}">
                     <img src="{theme_url filename='images/btn_moveup.png'}" alt="{str(tag=editspecific arg1=$itemr->title)|escape:html|safe}">
+                </a>		
+                <a href="{$WWWROOT}artefact/checklist/new.php?id={$itemr->parent}&amp;positionafter={$itemr->displayorder}" title="{str tag=insertitemafter section=artefact.checklist}">
+                    <img src="{theme_url filename='images/btn_add.png'}" alt="{str(tag=editspecific arg1=$itemr->title)|escape:html|safe}">
                 </a>
-				
 
 				</td>				
 

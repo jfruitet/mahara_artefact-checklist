@@ -20,7 +20,7 @@ $string['checklistsavedsuccessfully'] = 'CheckList saved successfully.';
 $string['code'] = 'Code';
 $string['codeitemdesc'] = 'The unicity of the code is not mandatory.';
 $string['codeprefix'] = 'Code prefix';
-$string['codeprefixdesc'] = 'Code prefix to add to each item number.';
+$string['codeprefixdesc'] = 'Code prefix to add to each item number as the code item.';
 $string['deletechecklist'] =  'Delete CheckList';
 $string['deletechecklistconfirm'] =  'Confirm CheckList deletion';
 $string['deleteitem'] =  'Delete Item';
@@ -47,6 +47,8 @@ $string['import'] = 'Import';
 $string['importcsv'] = 'Load a Moodle Outcomes csv file';
 $string['imported'] = '(Imported  %s)';
 $string['importxml'] = 'Load a xml file';
+$string['insertitemafter'] = 'Insert new item after this one';
+
 $string['inverselist'] = 'Inverse display order';
 $string['item'] = 'Item';
 $string['itemdeletedsuccessfully'] = 'Item deleted successfully.';

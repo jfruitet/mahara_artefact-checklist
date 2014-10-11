@@ -48,6 +48,7 @@ $string['import'] = 'Importer';
 $string['importcsv'] = 'Importer un fichier csv d\'Objectifs de Moodle (outcomes)';
 $string['imported'] = '(Importé le %s)';
 $string['importxml'] = 'Importer un fichier xml';
+$string['insertitemafter'] = 'Insérer un nouvel item après celui-ci';
 $string['inverselist'] = 'Inverser l\'ordre d\'affichage';
 $string['item'] = 'Item';
 $string['itemdeletedsuccessfully'] = 'Item supprimé.';

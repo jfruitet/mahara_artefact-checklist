@@ -45,7 +45,7 @@ if (!empty($itemid)){
 	if ($order=='DESC'){
         $direction = $direction ? 0 : 1;
 	}
-    ArtefactTypeItem::move_item($artefact->get('id'), $itemid, $direction);
+    ArtefactTypeItem::invert_item($artefact->get('id'), $itemid, $direction);
 }
 
 $items = ArtefactTypeItem::get_items($artefact->get('id'), $offset, $limit, $order);

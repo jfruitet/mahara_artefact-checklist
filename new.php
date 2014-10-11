@@ -21,13 +21,15 @@ if (!PluginArtefactChecklist::is_active()) {
 }
 
 $id = param_integer('id',0);
+$positionafter = param_integer('positionafter', -1); // item position before new one
+
 if ($id) {
     $checklist = new ArtefactTypeChecklist($id);
     if (!$USER->can_edit_artefact($checklist)) {
         throw new AccessDeniedException(get_string('accessdenied', 'error'));
     }
     define('TITLE', get_string('newitem','artefact.checklist'));
-    $form = ArtefactTypeItem::get_form($id);
+    $form = ArtefactTypeItem::get_form($id, null, $positionafter); // new item to insert
 }
 else {
     define('TITLE', get_string('newchecklist','artefact.checklist'));

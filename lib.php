@@ -1568,11 +1568,17 @@ class ArtefactTypeItem extends ArtefactType {
     * Gets the new/edit items pieform
     *
     */
-    public static function get_form($parent, $item=null) {
+    public static function get_form($parent, $item=null, $positionafter=-1) {
         require_once(get_config('libroot') . 'pieforms/pieform.php');
         require_once('license.php');
-        $elements = call_static_method(generate_artefact_class_name('item'), 'get_itemform_elements', $parent, $item);
-        $elements['submit'] = array(
+		$elements = call_static_method(generate_artefact_class_name('item'), 'get_itemform_elements', $parent, $item, $positionafter);
+    	if (empty($item) && ($positionafter>=0)){ // new item after one item
+            $elements['insertitem']  = array(
+            	'type' => 'hidden',
+            	'value' => 1,
+        	);
+		}
+		$elements['submit'] = array(
             'type' => 'submitcancel',
             'value' => array(get_string('saveitem','artefact.checklist'), get_string('cancel')),
             'goto' => get_config('wwwroot') . 'artefact/checklist/checklist.php?id=' . $parent,
@@ -1593,14 +1599,17 @@ class ArtefactTypeItem extends ArtefactType {
     * Gets the new/edit fields for the items pieform
     *
     */
-    public static function get_itemform_elements($parent, $item=null) {
+    public static function get_itemform_elements($parent, $item=null, $positionafter) {
 
-		// position in the list
-  		if (!empty($item)) {
+ 		// position in the list
+  		if (!empty($item)) { // item exists
 			$position = $item->displayorder;
 		}
-		else{
-            $position = -1;
+		else if ($positionafter>=0){ // new item after one item
+            $position = $positionafter;
+		}
+		else {
+            $position = -1;   // New firts item
 		}
 
         $elements = array(
@@ -1715,6 +1724,8 @@ class ArtefactTypeItem extends ArtefactType {
     public static function submit(Pieform $form, $values) {
         global $USER, $SESSION;
 
+        $insert=false;
+
         if (!empty($values['item'])) {
             $id = (int) $values['item'];
             $artefact = new ArtefactTypeItem($id);
@@ -1753,9 +1764,12 @@ class ArtefactTypeItem extends ArtefactType {
         }
         $artefact->commit();
 
-        $SESSION->add_ok_msg(get_string('itemsavedsuccessfully', 'artefact.checklist'));
+ 		if (!empty($values['insertitem'])){ // insert in the middle of the list
+        	move_items_down($artefact->get('parent'), $artefact->get('id'));
+		}
 
-        redirect('/artefact/checklist/checklist.php?id='.$values['parent']);
+        $SESSION->add_ok_msg(get_string('itemsavedsuccessfully', 'artefact.checklist'));
+        redirect(get_config('wwwroot') . 'artefact/checklist/checklist.php?id='.$artefact->get('parent'));
     }
 
 
@@ -1914,7 +1928,7 @@ class ArtefactTypeItem extends ArtefactType {
      * @param itemid
      * @param direction
      */
-	 public static function move_item($checklistid, $itemid, $direction=0){
+	 public static function invert_item($checklistid, $itemid, $direction=0){
 		if (!empty($checklistid)){
 			$nbitems = count_records('artefact', 'artefacttype', 'item', 'parent', $checklistid);
 
@@ -2137,6 +2151,35 @@ class ArtefactTypeItem extends ArtefactType {
 		}
 	}
 
+     /**
+     * This function move increment displayorder of all items for a checklist.
+     *
+     * @param checklistid : parent artefact id
+     * @param itemid : first item to move
+     * @return nothing
+     */
+     function move_items_down($checklistid, $itemid=0){
+        if (!empty($checklistid)){
+			$items = get_records_sql_array("SELECT a.id
+					FROM {artefact} a
+            			JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
+                	WHERE a.parent = ? AND a.artefacttype = 'item'
+					ORDER BY ai.displayorder ASC, a.id ASC", array($checklistid) );
+            $move = false;
+			if (!empty($items)){
+			    $counter=-1;
+    	        foreach ($items as $item) {
+					$counter++;
+					if( $item->id == $itemid){
+						$move = true;
+					}
+					if ($move){
+                    	set_field('artefact_checklist_item', 'displayorder', $counter, 'artefact', $item->id);
+					}
+				}
+			}
+		}
+	}
 
 
    	/**
@@ -2154,7 +2197,7 @@ class ArtefactTypeItem extends ArtefactType {
 				FROM {artefact} a
             		JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
                 WHERE a.parent = ? AND a.artefacttype = 'item'
-				ORDER BY ai.code ASC", array($checklist->id));
+				ORDER BY ai.displayorder ASC, ai.code, a.id ASC", array($checklist->id));
 			if (!empty($items)){
 	            $counter=0;
     	        foreach ($items as $item) {
