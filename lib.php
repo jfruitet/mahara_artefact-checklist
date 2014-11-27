@@ -194,6 +194,10 @@ class ArtefactTypeChecklist extends ArtefactType {
 
 	}
 
+	public static function is_public() {
+        return $this->get('public');
+	}
+
 
     /**
      * Returns a URL for an icon for the appropriate artefact
@@ -1889,6 +1893,39 @@ class ArtefactTypeItem extends ArtefactType {
 							", array($itemid)));
         return $item;
     }
+
+        /**
+     * Builds the items list table for current checklist
+     *
+     * @param items (reference)
+     */
+    public function build_items_flatlist_html(&$items) {
+        $smarty = smarty_core();
+        $smarty->assign_by_ref('items', $items);
+        $items['tablerows'] = $smarty->fetch('artefact:checklist:itemslist.tpl');
+
+        $pagination = build_pagination(array(
+            'id' => 'itemlist_pagination',
+            'class' => 'center',
+            'url' => get_config('wwwroot') . 'artefact/checklist/viewlist.php?id='.$items['id'],
+            //'jsonscript' => 'artefact/checklist/items.json.php',
+            'datatable' => 'itemslist',
+            'count' => $items['count'],
+            'limit' => $items['limit'],
+            'offset' => $items['offset'],
+            'firsttext' => '',
+            'previoustext' => '',
+            'nexttext' => '',
+            'lasttext' => '',
+            'numbersincludefirstlast' => false,
+            'resultcounttextsingular' => get_string('item', 'artefact.checklist'),
+            'resultcounttextplural' => get_string('items', 'artefact.checklist'),
+        ));
+        $items['pagination'] = $pagination['html'];
+        $items['pagination_js'] = $pagination['javascript'];
+    }
+
+
 
     /**
      * Builds the items list table for current checklist

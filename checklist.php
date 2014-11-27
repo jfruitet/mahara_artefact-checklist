@@ -34,6 +34,7 @@ $limit  = param_integer('limit', 10);
 $order = param_alpha('order', 'ASC');
 
 $artefact = new ArtefactTypeChecklist($id);
+
 if (!$USER->can_edit_artefact($artefact)) {
     throw new AccessDeniedException(get_string('accessdenied', 'error'));
 }

@@ -29,6 +29,7 @@ $string['deletethischecklist'] =  'Delete this CheckList';
 $string['deletethisitem'] =  'Delete this Item';
 $string['descimportcsv'] = 'Choose a Moodle Outcomes Csv file.';
 $string['descimportmoodlecsv'] = 'Choose a Moodle Checklist Csv file.';
+$string['descimportxml'] = 'Choose a Mahara CheckList XML file.';
 $string['description'] = 'Description';
 $string['descselected'] = 'Only if checked the new scale value would be set';
 $string['displayorder'] = 'Position in the list';

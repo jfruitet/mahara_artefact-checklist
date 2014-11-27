@@ -558,7 +558,6 @@ $separator = ',';
 if ($handle = fopen($filename, "r")){
     $line = 0; // will keep track of current line, to give better error messages.
     $counteritem=0; // how many items ?
-    $motivation = $motivation.' '. get_string('outcomes', 'artefact.checklist', $name);
 
 	$file_headers = '';
 
