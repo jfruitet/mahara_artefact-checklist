@@ -1782,6 +1782,8 @@ class ArtefactTypeItem extends ArtefactType {
      *
      * @param limit how many items to display per page
      * @param offset current page to display
+     * @param order
+     * @param indexthreshold : minimal value of scale index
      * @return array (count: integer, data: array)
      */
     public static function get_items($checklist, $offset=0, $limit=10, $order='ASC') {
@@ -1793,7 +1795,7 @@ class ArtefactTypeItem extends ArtefactType {
                 FROM {artefact} a
             JOIN {artefact_checklist_item} at ON at.artefact = a.id
             WHERE a.artefacttype = 'item' AND a.parent = ?
-            ORDER BY at.displayorder ".$order.", at.code ".$order, array($checklist), $offset, $limit))
+            ORDER BY at.displayorder ".$order, array($checklist), $offset, $limit))
             || ($results = array());
 
 //            ORDER BY at.code ".$order, array($checklist), $offset, $limit))
@@ -1845,6 +1847,76 @@ class ArtefactTypeItem extends ArtefactType {
         return $result;
     }
 
+       /**
+     * This function returns a list of the current checklist items.
+     *
+     * @param limit how many items to display per page
+     * @param offset current page to display
+     * @param order
+     * @param indexthreshold : minimal value of scale index
+     * @return array (count: integer, data: array)
+     */
+    public static function get_items_threshold($checklist, $indexthreshold=0) {
+        $datenow = time(); // time now to use for formatting items by completion
+
+        ($results = get_records_sql_array("
+            SELECT a.id, at.artefact AS item, at.code, at.scale, at.valueindex, at.optionitem, at.displayorder,
+                a.title, a.description, a.parent, a.mtime
+                FROM {artefact} a
+            JOIN {artefact_checklist_item} at ON at.artefact = a.id
+            WHERE a.artefacttype = 'item' AND a.parent = ?
+            AND at.valueindex >= ?
+            ORDER BY at.displayorder ASC", array($checklist, $indexthreshold)))
+            || ($results = array());
+
+        $n=count($results);
+        // format the data and setup completed for display
+        if (!empty($results)) {
+
+            foreach ($results as $result) {
+                $result->description = '<p>' . preg_replace('/\n\n/','</p><p>', $result->description) . '</p>';
+				// formatting scale display
+				// valueindex formatting
+				if (!empty($result->scale) && preg_match("/,/",$result->scale)){
+            		if ($tabscale = explode(',',$result->scale)){
+						$max = count($tabscale);
+						$i=0;
+						$s='';
+
+						while ($i<$max){
+							if (!empty($tabscale[$i])){
+								if ($i==$result->valueindex){
+                                	$s.='<span class="surligne"><b>'.trim($tabscale[$i]).'</b></span> ';
+									//$s.='<span background-color:yellow; font-weight:bold; color:navy><b>'.trim($tabscale[$i]).'</b></span> ';
+								}
+								else{
+                                	$s.='<i>'.trim($tabscale[$i]).'</i> ';
+								}
+							}
+							$i++;
+						}
+                		$result->scale=$s;
+					}
+				}
+				else{
+                    $result->scale = '<span class="surligne"><b>'.trim($result->scale).'</b></span> ';
+				}
+
+            }
+        }
+
+        $result = array(
+            'count'  => $n,
+            'data'   => $results,
+            'offset' => 0,
+            'limit'  => $n,
+            'id'     => $checklist,
+        );
+
+        return $result;
+    }
+
+
    /**
      * This function returns a raw list of items.
      *
@@ -1884,13 +1956,14 @@ class ArtefactTypeItem extends ArtefactType {
      */
     public static function get_item($itemid) {
         global $USER;
-
         ($item = get_record_sql("
 							SELECT a.*, ai.*
 							FROM {artefact} a
             				JOIN {artefact_checklist_item} ai ON ai.artefact = a.id
                             WHERE a.id = ? AND a.artefacttype = 'item'
 							", array($itemid)));
+
+
         return $item;
     }
 
@@ -2013,9 +2086,9 @@ class ArtefactTypeItem extends ArtefactType {
         $smarty = smarty_core();
  		$smarty->assign_by_ref('items', $items);
         $smarty->assign_by_ref('options', $options);
-
-        $items['tablerows'] = $smarty->fetch($template);
-
+		if (!empty($template)){
+        	$items['tablerows'] = $smarty->fetch($template);
+		}
         if ($items['limit'] && $pagination) {
             $pagination = build_pagination(array(
                 'id' => $pagination['id'],

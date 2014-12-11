@@ -66,8 +66,7 @@ class PluginBlocktypeChecklist extends PluginBlocktype {
             if ($checklist = artefact_instance_from_id($configdata['artefactid'])){
 				// print_object($checklist);
 
-            	$items = ArtefactTypeItem::get_items($configdata['artefactid']);
-
+                $items = ArtefactTypeItem::get_items_threshold($configdata['artefactid'], 1); // only if scale valueindex > =1
             	// $template = 'artefact:checklist:itemrows.tpl';
                 // $template = '';
             	$blockid = $instance->get('id');
@@ -84,7 +83,7 @@ class PluginBlocktypeChecklist extends PluginBlocktype {
                     	'jsonscript' => 'artefact/checklist/viewitems.json.php',
 	                );
     	        }
-        	    ArtefactTypeItem::render_items($items, null, $configdata, $pagination);
+        	    ArtefactTypeItem::render_items($items, null, $configdata, $pagination, false);
 
             	if ($exporter && $items['count'] > $items['limit']) {
                 	$artefacturl = get_config('wwwroot') . 'view/artefact.php?artefact=' . $configdata['artefactid']
