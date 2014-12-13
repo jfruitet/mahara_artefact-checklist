@@ -13,6 +13,13 @@
 <table id="itemslist" class="fullwidth listing">
 <tr><td width="90%">
 <h3 align="center"><a href="{$WWWROOT}artefact/checklist/index.php?id={$checklist}">{$artefacttitle|safe}</a></h3>
+{if $artefactdescription}
+<p>{$artefactdescription|safe}
+{if $artefactmotivation}
+<br />{$artefactmotivation|safe}
+{/if}
+</p>
+{/if}
 </td><td>
               <a href="{$WWWROOT}artefact/checklist/valide/index.php?id={$checklist}" title="{str tag=validate section=artefact.checklist}" >
                     <img src="{$iconcheckpath}" alt="{str(tag=validatespecific section=artefact.checklist arg1=$artefacttitle)|escape:html|safe}"></a>

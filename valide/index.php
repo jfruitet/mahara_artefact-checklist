@@ -14,7 +14,7 @@ define('MENUITEM', 'content/checklist');
 define('SECTION_PLUGINTYPE', 'artefact');
 define('SECTION_PLUGINNAME', 'checklist');
 define('SECTION_PAGE', 'index');
-define('CHECKLIST_SUBPAGE', 'publiclists');
+define('CHECKLIST_SUBPAGE', 'index');
 
 require_once(dirname(dirname(dirname(dirname(__FILE__)))) . '/init.php');
 require_once('pieforms/pieform.php');

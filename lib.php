@@ -1080,10 +1080,10 @@ class ArtefactTypeChecklist extends ArtefactType {
                 $elements['htmltitle'.$i] = array(
 					'title' => get_string('title', 'artefact.checklist'),
                 	'type' => 'html',
-                	'value' => $item->title,
+                	'value' => option_display($item->title, $item->optionitem),
            		);
 
-                 $elements['htmldescription'.$i] = array(
+                $elements['htmldescription'.$i] = array(
 					'title' => get_string('description', 'artefact.checklist'),
                 	'type' => 'html',
                 	'value' => $item->description,
@@ -1119,6 +1119,19 @@ class ArtefactTypeChecklist extends ArtefactType {
                 	'type' => 'hidden',
                 	'value' => $item->valueindex,
            		);
+
+                $elements['optionitem'.$i] = array(
+                	'type' => 'hidden',
+                	'value' => $item->optionitem,
+           		);
+
+				/*
+                $elements['htmloptionitem'.$i] = array(
+                	'title' => get_string('optionitem', 'artefact.checklist'),
+                	'type' => 'html',
+                	'value' => '<i>'.$item->optionitem.'</i>',
+           		);
+				*/
 
 				// Scale
 				if (!empty($item->scale)){
@@ -1183,8 +1196,13 @@ class ArtefactTypeChecklist extends ArtefactType {
 					}
 				}
     	        $i++;
-			}
 
+                $elements['htmlend'.$i] = array(
+					'title' => '',
+                	'type' => 'html',
+                	'value' => '<hr />',
+           		);
+			}
 
 	        $elements['nbitems'] = array(
     	       	'type' => 'hidden',
@@ -1297,7 +1315,12 @@ class ArtefactTypeChecklist extends ArtefactType {
 						//echo "<br />DEBUG :: lib.php :: 1348<br />\n";
 						//print_object($item);
 						//exit;
-                        $valueindex=$values['scaleselect'.$i];
+                        if(isset($values['scaleselect'.$i])){
+                        	$valueindex=$values['scaleselect'.$i];
+						}
+						else{
+                            $valueindex=-1;
+						}
 						// artefact
       					$item->set('valueindex', $valueindex);
        					$item->commit();
@@ -2168,6 +2191,31 @@ class ArtefactTypeItem extends ArtefactType {
 			}
 		}
 		return $scalestr;
+	}
+
+
+    /**
+    * Format desription and title display
+    * @input title
+    * @input optionitem : Type (0 - normal; 1 - optional; 2 - heading)
+    * @output title formatted
+    */
+    function option_display($title, $optionitem) {
+        $str=$title;
+		if (!empty($optionitem)){
+			switch ($optionitem) {
+				case 1 : // optional
+                    $str='<i>'.$title.'</i>'."\n";
+				break;
+				case 2 : // header
+                    $str='<h5>'.$title.'</h5>'."\n";
+				break;
+				default :
+                    $str='<b>'.$title.'</b>'."\n";
+				break;
+			}
+		}
+		return $str;
 	}
 
     /**

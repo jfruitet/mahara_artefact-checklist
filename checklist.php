@@ -62,11 +62,14 @@ EOF;
 
 
 $smarty = smarty(array('paginator'));
-$smarty->assign_by_ref('artefacttitle', $artefact->get('title'));
 $smarty->assign_by_ref('items', $items);
 $smarty->assign_by_ref('checklist', $id);
 $smarty->assign_by_ref('tags', $artefact->get('tags'));
 $smarty->assign_by_ref('owner', $artefact->get('owner'));
+
+$smarty->assign('artefacttitle', $artefact->get('title'));
+$smarty->assign('artefactdescription', $artefact->get('description'));
+$smarty->assign_by_ref('artefactmotivation', $artefact->get('motivation'));
 
 
 if ($limit<$items['count']){
