@@ -2131,7 +2131,7 @@ class ArtefactTypeItem extends ArtefactType {
         }
     }
 
-}
+}  // class end
 
 	/**
      * This function returns the number of items from a parent checklist.

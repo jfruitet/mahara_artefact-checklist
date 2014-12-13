@@ -69,7 +69,7 @@ $smarty->assign_by_ref('owner', $artefact->get('owner'));
 
 $smarty->assign('artefacttitle', $artefact->get('title'));
 $smarty->assign('artefactdescription', $artefact->get('description'));
-$smarty->assign_by_ref('artefactmotivation', $artefact->get('motivation'));
+$smarty->assign('artefactmotivation', $artefact->get('motivation'));
 
 
 if ($limit<$items['count']){

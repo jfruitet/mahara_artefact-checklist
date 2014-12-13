@@ -59,7 +59,7 @@ class PluginBlocktypeChecklist extends PluginBlocktype {
         safe_require('artefact','checklist');
 
         $configdata = $instance->get('configdata');
-
+		//
 		$threshold = (!empty($configdata['threshold'])) ? $configdata['threshold'] : 0;
 
 		$smarty = smarty_core();
@@ -118,18 +118,15 @@ class PluginBlocktypeChecklist extends PluginBlocktype {
         $instance->set('artefactplugin', 'checklist');
         $configdata = $instance->get('configdata');
 
-        $form = array();
-
-        // Which resume field does the user want
-        $form['artefactid'] = self::artefactchooser_element((isset($configdata['artefactid'])) ? $configdata['artefactid'] : null);
-        $form['threshold'] = array(
+        $elements = array();
+        $elements['artefactid'] = self::artefactchooser_element((isset($configdata['artefactid'])) ? $configdata['artefactid'] : null);
+		$elements['threshold'] = array(
                 'type'  => 'checkbox',
                 'title' => get_string('threshold', 'blocktype.checklist/checklist'),
 				'description' => get_string('thresholddesc', 'blocktype.checklist/checklist'),
                 'defaultvalue' => 1,
             );
-
-        return $form;
+        return $elements;
     }
 
     public static function artefactchooser_element($default=null) {

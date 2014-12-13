@@ -49,7 +49,6 @@ $string['importcsv'] = 'Load a Moodle Outcomes csv file';
 $string['imported'] = '(Imported  %s)';
 $string['importxml'] = 'Load a xml file';
 $string['insertitemafter'] = 'Insert new item after this one';
-
 $string['inverselist'] = 'Inverse display order';
 $string['item'] = 'Item';
 $string['itemdeletedsuccessfully'] = 'Item deleted successfully.';
@@ -112,3 +111,6 @@ $string['validatespecific'] = 'Items evaluation of "%s"';
 $string['validation'] = 'Evaluation';
 $string['valueindex'] = 'Scale index';
 $string['valueindexdesc'] = 'An index value [0..NbElementOfScale[';
+$string['thresholdselection'] = 'Select a threshold';
+$string['thresholdselectiondesc'] = 'Only evaluated items &gt;= threshold are displayed';
+$string['moreoptions'] = 'More options';

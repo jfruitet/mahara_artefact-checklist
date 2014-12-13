@@ -109,3 +109,6 @@ $string['validatespecific'] = 'Evaluation des Items de "%s"';
 $string['validation'] = 'Evaluation';
 $string['valueindex'] = 'Index barème';
 $string['valueindexdesc'] = 'Valeur d\'index dans le barème [0..NbElementBarème[';
+$string['thresholdselection'] = 'Sélectionnez un seuil';
+$string['thresholdselectiondesc'] = 'Seuls les items évalués &gt;= seuil sont affichés';
+$string['moreoptions'] = 'Plus d\'options';
