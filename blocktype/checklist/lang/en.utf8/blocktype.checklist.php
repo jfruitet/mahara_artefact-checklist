@@ -20,3 +20,5 @@ $string['olderchecklist'] = 'Older checklist';
 $string['checklisttoshow'] = 'CheckList to show';
 $string['nochecklist'] = 'No CheckList';
 $string['noitems'] = 'No Items';
+$string['threshold'] = 'Use threshold';
+$string['thresholddesc'] = 'Only eveluated items are displayed';

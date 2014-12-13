@@ -20,3 +20,5 @@ $string['olderchecklist'] = 'Anciennes listes';
 $string['checklisttoshow'] = 'Liste à afficher';
 $string['nochecklist'] = 'Pas de Liste à montrer';
 $string['noitems'] = 'Pas d\'Item à montrer';
+$string['threshold'] = 'Utiliser le seuil';
+$string['thresholddesc'] = 'Ne retenir que les items évalués';
