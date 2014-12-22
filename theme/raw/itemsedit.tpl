@@ -20,10 +20,8 @@
 {/if}
 </p>
 {/if}
-</td><td>
-              <a href="{$WWWROOT}artefact/checklist/valide/index.php?id={$checklist}" title="{str tag=validate section=artefact.checklist}" >
-                    <img src="{$iconcheckpath}" alt="{str(tag=validatespecific section=artefact.checklist arg1=$artefacttitle)|escape:html|safe}"></a>
-</td></tr></table>
+</td>
+</tr></table>
 <table id="itemslist" class="fullwidth listing">
     <thead>
         <tr>
