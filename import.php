@@ -400,6 +400,9 @@ if ($handle = fopen($filename, "r")){
     if (!empty($newtitle)){
 		$description = $ac->get('description');
 		$ac->set('description', $description . "\n<br /><b>$newtitle</b>\n");
+        $ac->set('locked', 0);
+        $ac->set('allowcomments', 0);
+        $ac->set('approvecomments', 0);
 		$ac->commit();
 	}
 }
@@ -694,6 +697,9 @@ if ($handle = fopen($filename, "r")){
     if (!empty($newtitle)){
 		$description = $ac->get('description');
 		$ac->set('description', $description . "\n<br /><b>$newtitle</b>\n");
+        $ac->set('locked', 0);
+        $ac->set('allowcomments', 0);
+        $ac->set('approvecomments', 0);
 		$ac->commit();
 	}
 }
