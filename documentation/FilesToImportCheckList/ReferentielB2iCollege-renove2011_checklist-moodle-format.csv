@@ -1,0 +1,24 @@
+Item text,Indent,Type (0 - normal; 1 - optional; 2 - heading),Due Time (timestamp),Colour (red; orange; green; purple; black)
+B2i Collège – 2011,0,2,0,purple
+B2i Collège Domaine 1 :: S'approprier un environnement informatique de travail,1,2,0,red
+B2i Collège B2iCol1-1 :: Utiliser ; gérer les espaces de stockage à disposition,2,0,0,black
+B2i Collège B2iCol1-2 :: Utiliser les périphériques à disposition,2,0,0,black
+B2i Collège B2iCol1-3 :: Utiliser les logiciels et les services à disposition,2,0,0,black
+B2i Collège Domaine 2 :: Adopter une attitude responsable,1,2,0,red
+B2i Collège B2iCol2-1 :: Connaître et respecter les règles élémentaires du droit relatif à sa pratique,2,0,0,black
+B2i Collège B2iCol2-2 :: Protéger sa personne et ses données,2,0,0,black
+B2i Collège B2iCol2-3 :: Faire preuve d'esprit critique face à l'information et à son traitement,2,0,0,black
+B2i Collège B2iCol2-4 :: Participer à des travaux collaboratifs en connaissant les enjeux et en respectant les règles,2,0,0,black
+B2i Collège Domaine 3 :: Créer ; produire ; traiter ; exploiter des données,1,2,0,red
+B2i Collège B2iCol3-1 :: Saisir et mettre en page un texte,2,0,0,black
+B2i Collège B2iCol3-2 :: Traiter une image ; un son ou une vidéo,2,0,0,black
+B2i Collège B2iCol3-3 :: Organiser la composition du document ; prévoir sa présentation en fonction de sa destination,2,0,0,black
+B2i Collège B2iCol3-4 :: Différencier une situation simulée ou modélisée d'une situation réelle,2,0,0,black
+B2i Collège Domaine 4 :: S'informer ; se documenter,1,2,0,red
+B2i Collège B2iCol4-1 :: Consulter des bases de données documentaires en mode simple (plein texte),2,0,0,black
+B2i Collège B2iCol4-2 :: Identifier ; trier et évaluer des ressources,2,0,0,black
+B2i Collège B2iCol4-3 :: Chercher et sélectionner l'information demandée,2,0,0,black
+B2i Collège Domaine 5 :: Communiquer; échanger,1,2,0,red
+B2i Collège B2iCol5-1 :: Ecrire ; envoyer ; diffuser ; publier,2,0,0,black
+B2i Collège B2iCol5-2 :: Recevoir un commentaire ; un message y compris avec des pièces jointes,2,0,0,black
+B2i Collège B2iCol5-3 :: Exploiter les spécificités des différentes situations de communication en temps réel et en temps différé,2,0,0,black

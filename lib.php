@@ -159,7 +159,7 @@ class PluginArtefactChecklist extends PluginArtefact {
 
 class ArtefactTypeChecklist extends ArtefactType {
 
- 	// nouvelles proprietes par rapport Ó la classe artefact standart
+ 	// nouvelles proprietes par rapport a la classe artefact standart
 	protected $motivation = '';
     protected $public = 0;
 	
@@ -609,10 +609,19 @@ class ArtefactTypeChecklist extends ArtefactType {
     public static function get_form_select($checklist=null, $items=null) {
         require_once(get_config('libroot') . 'pieforms/pieform.php');
         require_once('license.php');
+		/*
+		echo "<br />DEBUG :: lib.php :: 612 :: ARTEFACT CHECKLIST<br />\n";
+        print_object($checklist);
+		echo "<br />DEBUG :: lib.php :: 614 :: ITEMS<br />\n";
+        print_object($items);
+		exit;
+		*/
         $elements = call_static_method(generate_artefact_class_name('checklist'), 'get_publiclistform_elements', $checklist);
-		//echo "ITEMS<br />\n";
-        //print_object($elements);
-		//exit;
+		/*
+		echo "ITEMS<br />\n";
+        print_object($elements);
+		exit;
+		*/
 		if (!empty($items['data'])){
 			$i = 0;
 			foreach ($items['data'] as $item){

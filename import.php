@@ -240,7 +240,7 @@ function import_submit_csv(Pieform $form, $values) {
     $public = !empty($values['public'])?$values['public']:0;
 	if (!empty($values['filename']   )){
 		// DEBUG
-		//echo "<br /> import.php :: 241 :: FILENAME <br />\n";
+		//echo "<br /> import.php :: 243 :: FILENAME <br />\n";
 		//print_object( $values['filename']  );
 		//exit;
 	 	$name =  $values['filename']['name'];
@@ -271,7 +271,7 @@ function create_checklist_csv($title, $description, $motivation, $public, $name,
 // JF 2014
 if ($handle = fopen($filename, "r")){
     $line = 0; // will keep track of current line, to give better error messages.
-    $counteritem=0; // how many items ?
+    $counteritem = 0; // how many items ?
     $motivation = $motivation.' '. get_string('outcomes', 'artefact.checklist', $name);
 	$newtitle='';
 
@@ -298,7 +298,7 @@ if ($handle = fopen($filename, "r")){
     $data->motivation = $motivation;
 	$data->public = $public;
 	// Debug
-	// print_object($data      );
+	//print_object($data);
 
 	$classname = 'ArtefactTypeChecklist';
 	$ac = new $classname(0, $data);
@@ -308,8 +308,8 @@ if ($handle = fopen($filename, "r")){
     // or whenever we can depend on PHP5, set the second parameter (8192) to 0 (unlimited line length) : the database can store over 128k per line.
     while ( $csv_data = fgetcsv($handle, 8192, ';', '"')) { // if the line is over 8k, it won't work...
         $line++;
-
-		//print_object($csv_data      );
+        // Debug
+		//print_object($csv_data);
 
         // be tolerant on input, as fgetcsv returns "an array comprising a single null field" on blank lines
         if ($csv_data == array(null)) {
@@ -583,19 +583,19 @@ if ($handle = fopen($filename, "r")){
     $data->motivation = $motivation;
 	$data->public = $public;
 	// Debug
-	// print_object($data      );
-
+	//print_object($data);
+	//exit;
 	$classname = 'ArtefactTypeChecklist';
 	$ac = new $classname(0, $data);
 	$ac->commit();
 
-    // data should be separated by a ';'.  *NOT* by a comma!  TODO: version 2.0
+    // data should be separated by a ','.  *NOT* by a semi column !  TODO: version 2.0
     // or whenever we can depend on PHP5, set the second parameter (8192) to 0 (unlimited line length) : the database can store over 128k per line.
-    while ( $csv_data = fgetcsv($handle, 8192, $separator, '"')) { // if the line is over 8k, it won't work...
+    while ( $csv_data = fgetcsv($handle, 8192, $separator)) { // if the line is over 8k, it won't work...
         $line++;
 
-		//print_object($csv_data      );
-
+		//print_object($csv_data);
+		//exit;
         // be tolerant on input, as fgetcsv returns "an array comprising a single null field" on blank lines
         if ($csv_data == array(null)) {
             continue;
@@ -629,7 +629,7 @@ if ($handle = fopen($filename, "r")){
         // sanity check #2: every line must have the same number of columns as there are
         // headers.  If not, processing stops.
         if ( count($csv_data) != count($file_headers) ) {
-           $fatal_error = true;
+            $fatal_error = true;
             break;
         }
 
@@ -651,10 +651,14 @@ if ($handle = fopen($filename, "r")){
 // Domaine 1,0,2,0,green
 // C2i1 D1.1.1 :: Organiser un espace de travail complexe,1,1,0,0
 
-		if (preg_match("/ :: /", $csv_data[$imported_headers['Item text']])){
-			$pos = strpos($csv_data[$imported_headers['Item text']], " :: ");
-			$code=substr($csv_data[$imported_headers['Item text']], 0, $pos);
-           	$title=substr($csv_data[$imported_headers['Item text']], $pos+4);
+		if (preg_match("/::/", $csv_data[$imported_headers['Item text']])){
+			$pos = strpos($csv_data[$imported_headers['Item text']], "::");
+			$code=trim(substr($csv_data[$imported_headers['Item text']], 0, $pos));
+           	$title=trim(substr($csv_data[$imported_headers['Item text']], $pos+2));
+		}
+		else if ($csv_data[$imported_headers['Type (0 - normal; 1 - optional; 2 - heading)']] == 2){
+            $code=$csv_data[$imported_headers['Item text']];
+			$title=$csv_data[$imported_headers['Item text']];
 		}
 		else{
             $code=$codeprefix.' '.$counteritem;
@@ -693,6 +697,7 @@ if ($handle = fopen($filename, "r")){
 		$ac->commit();
 	}
 }
+
 }
 
 

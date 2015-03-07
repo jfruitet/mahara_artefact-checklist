@@ -8,7 +8,6 @@
  * @copyright  For copyright information on Mahara, please see the README file distributed with this software.
  *
  */
-
 define('INTERNAL', true);
 define('MENUITEM', 'content/checklist');
 define('SECTION_PLUGINTYPE', 'artefact');
@@ -16,15 +15,15 @@ define('SECTION_PLUGINNAME', 'checklist');
 define('SECTION_PAGE', 'index');
 define('CHECKLIST_SUBPAGE', 'publiclists');
 
+defined('INTERNAL') || die();
+
 require_once(dirname(dirname(dirname(dirname(__FILE__)))) . '/init.php');
-require_once('pieforms/pieform.php');
-require_once('pieforms/pieform/elements/calendar.php');
-require_once(get_config('docroot') . 'artefact/lib.php');
-safe_require('artefact','checklist');
+
+safe_require('artefact', 'checklist');
+
 if (!PluginArtefactChecklist::is_active()) {
     throw new AccessDeniedException(get_string('plugindisableduser', 'mahara', get_string('checklist','artefact.checklist')));
 }
-
 define('TITLE', get_string('selectlist','artefact.checklist'));
 
 $id = param_integer('id');
@@ -32,11 +31,12 @@ $id = param_integer('id');
 $artefact = new ArtefactTypeChecklist($id);
 $items = ArtefactTypeItem::get_all_items_raw($artefact->get('id'));
 
-//  A REMPLACER par verif si la liste est publique
+// Provoque un bug bizarre sur le serveur  Mahara-Dev su PostGres
+/*
 if (empty($artefact->get('public'))){
     throw new AccessDeniedException(get_string('accessdenied', 'error'));
 }
-
+*/
 
 $editform = ArtefactTypeChecklist::get_form_select($artefact, $items);
 

@@ -19,10 +19,7 @@ define('CHECKLIST_SUBPAGE', 'publiclists');
 defined('INTERNAL') || die();
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/init.php');
-// require_once('pieforms/pieform.php');
-// require_once('license.php');
 safe_require('artefact', 'checklist');
-// safe_require('artefact', 'file');
 
 define('TITLE', get_string('Publiclists','artefact.checklist'));
 

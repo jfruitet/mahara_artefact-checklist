@@ -5,28 +5,15 @@ Jean FRUITET - Université de Nantes
 
 jean.fruitet@univ-nantes.fr
 
-Checklist artefact for Mahara
-**Version : 1.0.2** for Mahara 1.9, 10.1, 10.2
-
-This artefact allows to create lists of items to check with a scale.
-
-Users can import outcomes and checklist Moodle files as new lists, share their lists and export them (XML format).
-
-Blocktype checklist may be displayed as any other artefact in Mahara  views (portefolio).
-  
-## Installation
-Unzip checklist-artefact.zip in mahara/artefact directory.
-
-As admin go to "Administration / Extentions" and unmask "checklist" artefact and blocktype.
-
-
-### Fonctionnalités
 
 L'artefact Mahara CheckList https://github.com/jfruitet/moodle_checkskill est un décalque (avec des fonctions moins ambitieuses) des plugins CheckList / CheckSkill (https://github.com/jfruitet/moodle_checkskill) de Moodle dans leur usage 
 pour l'évaluation de compétences...
 
+
+
 Comme Mahara est centré sur l'étudiants (utilisateur) il n'y pas dans la version Mahara la couche d'évaluation par l'enseignant.
 
+## Fonctionnalités
 Un utilisateur qui souhaite faire valoir des compétences (ou lister des items et les évaluer dans Mahara) commence par créer une nouvelle Liste, lui associe des Items, et pour ces items il définit un barème.
 
 S'il souhaite partager sa liste avec d'autres utilisateurs il peut la rendre publique.
@@ -60,7 +47,3 @@ Bien sûr on peut détourner Checklist pour implanter une  liste de course  :
 **En stock, A renouveler, Manquant, Abandonné**
 
 Et pour terminer les listes peuvent être affichées dans les Portfolio (vues) de Mahara.
-
-### Documentation
-
-See .artefact/checklist/documentation
