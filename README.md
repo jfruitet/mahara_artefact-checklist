@@ -24,7 +24,9 @@ There is a GitHub branch for each old major version of Mahara.
 - Mahara 1.9, 10.x, 15.04 :  https://github.com/jfruitet/mahara_artefact-checklist/tree/mahara102
 
 
-####User can edit hi list
+####User can create his lists
+
+Then user can chek the list against a multivaluated scale.
 
 ####User can import
 
