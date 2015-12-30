@@ -1,0 +1,24 @@
+Item text,Indent,Type (0 - normal; 1 - optional; 2 - heading),Due Time (timestamp),Colour (red; orange; green; purple; black)
+B2i,0,2,0,purple
+B2i Ecole Eco_1.1 :: Je sais désigner et nommer les principaux éléments (...),1,0,0,0
+B2i Ecole Eco_1.2 :: 1.2) Je sais allumer et éteindre l équipement informatique,1,0,0,0
+B2i Ecole Eco_1.3 :: Je sais déplacer le pointeur  placer le curseur  (...),1,0,0,0
+B2i Ecole Eco_1.4 :: Je sais accéder à un dossier  ouvrir et enregistrer un (...),1,0,0,0
+B2i Ecole Eco_2.1 :: Je connais les droits et devoirs indiqués dans la charte (...),1,0,0,0
+B2i Ecole Eco_2.2 :: Je respecte les autres et je me protège moi-même dans le (...),1,0,0,0
+B2i Ecole Eco_2.3 :: Si je souhaite récupérer un document  je vérifie que j (...),1,0,0,0
+B2i Ecole Eco_2.4 :: Je trouve des indices avant d’accorder ma confiance aux (...),1,0,0,0
+B2i Ecole Eco_3.1 :: Je sais produire et modifier un texte  une image ou un son.,1,0,0,0
+B2i Ecole Eco_3.2 :: Je sais saisir les caractères en minuscules  en (...),1,0,0,0
+B2i Ecole Eco_3.3 :: Je sais modifier la mise en forme des caractères et des (...),1,0,0,0
+B2i Ecole Eco_3.4 :: Je sais utiliser les fonctions copier  couper  coller  (...),1,0,0,0
+B2i Ecole Eco_3.5 :: Je sais regrouper dans un même document du texte ou des (...),1,0,0,0
+B2i Ecole Eco_3.6 :: Je sais imprimer un document.,1,0,0,0
+B2i Ecole Eco_4.1 :: 4.1) Je sais utiliser les fenêtres  ascenseurs  boutons de (...),1,0,0,0
+B2i Ecole Eco_4.2 :: 4.2) Je sais repérer les informations affichées à l (...),1,0,0,0
+B2i Ecole Eco_4.3 :: 4.3) Je sais saisir une adresse internet et naviguer dans (...),1,0,0,0
+B2i Ecole Eco_4.4 :: 4.4) Je sais utiliser un mot-clé ou un menu pour faire une (...),1,0,0,0
+B2i Ecole Eco_5.1 :: 5.1) Je sais envoyer et recevoir un message.,1,0,0,0
+B2i Ecole Eco_5.2 :: 5.2) Je sais dire de qui provient un message et à qui il (...),1,0,0,0
+B2i Ecole Eco_5.3 :: 5.3) Je sais trouver le sujet d’un message.,1,0,0,0
+B2i Ecole Eco_5.4 :: 5.4) Je sais trouver la date d envoi d un message.,1,0,0,0

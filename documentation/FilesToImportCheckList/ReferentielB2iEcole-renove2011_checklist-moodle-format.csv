@@ -1,0 +1,15 @@
+Item text,Indent,Type (0 - normal; 1 - optional; 2 - heading),Due Time (timestamp),Colour (red; orange; green; purple; black)
+B2i Ecole – 2011,0,2,0,purple
+B2i Ecole Domaine 1 :: S'approprier un environnement informatique de travail,1,2,0,red
+B2i Ecole B2iEco1-1 :: Connaître et maîtriser les fonctions de base d’un ordinateur et de ses périphériques,2,0,0,black
+B2i Ecole Domaine 2 :: Adopter une attitude responsable,1,2,0,red
+B2i Ecole B2iEco2-1 :: Connaître et respecter les règles élémentaires du droit relatif à sa pratique,2,0,0,black
+B2i Ecole Domaine 3 :: Créer ; produire ; traiter ; exploiter des données,1,2,0,red
+B2i Ecole B2iEco3-1 :: Produire un document numérique ; texte ; image ; son,2,0,0,black
+B2i Ecole B2iEco3-2 :: Utiliser l’outil informatique pour présenter un travail,2,0,0,black
+B2i Ecole Domaine 4 :: S'informer ; se documenter,1,2,0,red
+B2i Ecole B2iEco4-1 :: Lire un document numérique,2,0,0,black
+B2i Ecole B2iEco4-2 :: Chercher des informations par voie électronique,2,0,0,black
+B2i Ecole B2iEco4-3 :: Découvrir les richesses et les limites des ressources de l'internet,2,0,0,black
+B2i Ecole Domaine 5 :: Communiquer; échanger,1,2,0,red
+B2i Ecole B2iEco5-1 :: Echanger avec les technologies de l'information et de la communication,2,0,0,black
