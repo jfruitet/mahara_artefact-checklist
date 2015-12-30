@@ -12,12 +12,17 @@ Version for Mahara 15.10
 
 **Attention** :
 
-There is a new GitHub branch for each major version of Mahara.
+La branche *master* est toujours la plus à jour pour la version de Mahara la plus récente.
+Il y a une branche pour chaque version majeure antérieure.
 
-A chaque version majeure de l'API de Mahara un nouvelle branche du gitHub
+The *master* branch is up-to-date for the latest Mahara version.
+There is a GitHub branch for each old major version of Mahara.
 
-- Mahara 1.9, 10.x, 15.04 : https://github.com/jfruitet/mahara_artefact-checklist/tree/master
-- Mahara 15.10 : https://github.com/jfruitet/mahara_artefact-checklist/tree/mahara1510
+
+- Mahara 15.10 : https://github.com/jfruitet/mahara_artefact-checklist/tree/master
+
+- Mahara 1.9, 10.x, 15.04 :  https://github.com/jfruitet/mahara_artefact-checklist/tree/mahara102
+
 
 ####User can edit hi list
 
